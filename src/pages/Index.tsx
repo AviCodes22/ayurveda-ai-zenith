@@ -1,12 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { HeroSection } from "@/components/HeroSection";
+import { Dashboard } from "@/components/Dashboard";
+import { AuthModal } from "@/components/AuthModal";
 
 const Index = () => {
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [showAuth, setShowAuth] = useState(false);
+
+  const handleLogin = (userType: string) => {
+    setCurrentUser(userType);
+    setShowAuth(false);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      {!currentUser ? (
+        <>
+          <HeroSection onGetStarted={() => setShowAuth(true)} />
+          <AuthModal 
+            isOpen={showAuth} 
+            onClose={() => setShowAuth(false)}
+            onLogin={handleLogin}
+          />
+        </>
+      ) : (
+        <Dashboard userType={currentUser} onLogout={handleLogout} />
+      )}
     </div>
   );
 };

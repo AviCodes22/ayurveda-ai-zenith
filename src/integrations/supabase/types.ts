@@ -14,16 +14,171 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      administrator_workers: {
+        Row: {
+          created_at: string | null
+          department: string
+          id: string
+          is_active: boolean | null
+          position: string
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          department: string
+          id?: string
+          is_active?: boolean | null
+          position: string
+          worker_id: string
+        }
+        Update: {
+          created_at?: string | null
+          department?: string
+          id?: string
+          is_active?: boolean | null
+          position?: string
+          worker_id?: string
+        }
+        Relationships: []
+      }
+      doctor_verification: {
+        Row: {
+          ayush_registration_number: string
+          clinic_address: string | null
+          created_at: string | null
+          id: string
+          qualification: string
+          specialization: string
+          updated_at: string | null
+          user_id: string
+          verification_status: string | null
+          verified_at: string | null
+          years_of_experience: number | null
+        }
+        Insert: {
+          ayush_registration_number: string
+          clinic_address?: string | null
+          created_at?: string | null
+          id?: string
+          qualification: string
+          specialization: string
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string | null
+          verified_at?: string | null
+          years_of_experience?: number | null
+        }
+        Update: {
+          ayush_registration_number?: string
+          clinic_address?: string | null
+          created_at?: string | null
+          id?: string
+          qualification?: string
+          specialization?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string | null
+          verified_at?: string | null
+          years_of_experience?: number | null
+        }
+        Relationships: []
+      }
+      patient_details: {
+        Row: {
+          allergies: string | null
+          blood_pressure: string | null
+          body_constitution: string | null
+          chief_complaint: string | null
+          created_at: string | null
+          current_medications: string | null
+          dietary_preferences: string | null
+          id: string
+          lifestyle_habits: string | null
+          medical_history: string | null
+          pulse_rate: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          allergies?: string | null
+          blood_pressure?: string | null
+          body_constitution?: string | null
+          chief_complaint?: string | null
+          created_at?: string | null
+          current_medications?: string | null
+          dietary_preferences?: string | null
+          id?: string
+          lifestyle_habits?: string | null
+          medical_history?: string | null
+          pulse_rate?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          allergies?: string | null
+          blood_pressure?: string | null
+          body_constitution?: string | null
+          chief_complaint?: string | null
+          created_at?: string | null
+          current_medications?: string | null
+          dietary_preferences?: string | null
+          id?: string
+          lifestyle_habits?: string | null
+          medical_history?: string | null
+          pulse_rate?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          aadhar_number: string
+          created_at: string | null
+          date_of_birth: string
+          full_name: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          unique_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          aadhar_number: string
+          created_at?: string | null
+          date_of_birth: string
+          full_name: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          unique_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          aadhar_number?: string
+          created_at?: string | null
+          date_of_birth?: string
+          full_name?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          unique_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_unique_id: {
+        Args: { role_type: Database["public"]["Enums"]["app_role"] }
+        Returns: string
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "patient" | "doctor" | "administrator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +305,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["patient", "doctor", "administrator"],
+    },
   },
 } as const

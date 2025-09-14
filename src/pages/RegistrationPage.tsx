@@ -163,100 +163,21 @@ const RegistrationPage = () => {
   };
 
   const handleRegistration = async () => {
-    if (!validateBasicInfoWithFeedback() || !role) return;
-    
+    if ((!role) || (step === 2 && !validateBasicInfoWithFeedback())) return;
     setIsLoading(true);
 
     try {
-      // Verify admin worker ID if administrator
-      if (role === 'administrator') {
-        const { data: workerData, error: workerError } = await supabase
-          .from('administrator_workers')
-          .select('worker_id')
-          .eq('worker_id', adminDetails.workerId)
-          .eq('is_active', true)
-          .maybeSingle();
-
-        if (workerError || !workerData) {
-          toast({
-            title: "Invalid Worker ID",
-            description: "The provided worker ID is not valid or inactive.",
-            variant: "destructive"
-          });
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const payload: any = {
         email: basicInfo.email,
         password: basicInfo.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`
-        }
-      });
+        fullName: basicInfo.fullName,
+        dateOfBirth: basicInfo.dateOfBirth,
+        aadharNumber: basicInfo.aadharNumber,
+        role,
+      };
 
-      if (authError) {
-        toast({
-          title: "Registration Failed",
-          description: authError.message,
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      if (!authData.user) {
-        toast({
-          title: "Registration Failed",
-          description: "Failed to create user account.",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Generate unique ID
-      const { data: uniqueIdData, error: uniqueIdError } = await supabase
-        .rpc('generate_unique_id', { role_type: role });
-
-      if (uniqueIdError) {
-        toast({
-          title: "Registration Failed",
-          description: "Failed to generate unique ID.",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          user_id: authData.user.id,
-          unique_id: uniqueIdData,
-          full_name: basicInfo.fullName,
-          date_of_birth: basicInfo.dateOfBirth,
-          aadhar_number: basicInfo.aadharNumber,
-          role: role
-        });
-
-      if (profileError) {
-        toast({
-          title: "Registration Failed",
-          description: "Failed to create user profile.",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Create role-specific details
       if (role === 'patient') {
-        await supabase.from('patient_details').insert({
-          user_id: authData.user.id,
+        payload.patientDetails = {
           medical_history: patientDetails.medicalHistory,
           current_medications: patientDetails.currentMedications,
           allergies: patientDetails.allergies,
@@ -265,31 +186,30 @@ const RegistrationPage = () => {
           blood_pressure: patientDetails.bloodPressure,
           dietary_preferences: patientDetails.dietaryPreferences,
           lifestyle_habits: patientDetails.lifestyleHabits,
-          chief_complaint: patientDetails.chiefComplaint
-        });
+          chief_complaint: patientDetails.chiefComplaint,
+        };
       } else if (role === 'doctor') {
-        await supabase.from('doctor_verification').insert({
-          user_id: authData.user.id,
+        payload.doctorDetails = {
           ayush_registration_number: doctorDetails.ayushRegistrationNumber,
           specialization: doctorDetails.specialization,
           qualification: doctorDetails.qualification,
-          years_of_experience: parseInt(doctorDetails.yearsOfExperience),
-          clinic_address: doctorDetails.clinicAddress
-        });
+          years_of_experience: doctorDetails.yearsOfExperience ? parseInt(doctorDetails.yearsOfExperience) : null,
+          clinic_address: doctorDetails.clinicAddress,
+        };
+      } else if (role === 'administrator') {
+        payload.adminDetails = { workerId: adminDetails.workerId };
       }
 
-      toast({
-        title: "Registration Successful!",
-        description: `Welcome to AyurTech Pro! Your unique ID is: ${uniqueIdData}`,
-      });
+      const { data, error } = await supabase.functions.invoke('register', { body: payload });
+      if (error) {
+        toast({ title: 'Registration Failed', description: error.message, variant: 'destructive' });
+        return;
+      }
 
+      toast({ title: 'Registration Successful!', description: `Your unique ID is ${data.unique_id}. Please log in.` });
       navigate('/login');
-    } catch (error) {
-      toast({
-        title: "Registration Failed",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
+    } catch (error: any) {
+      toast({ title: 'Registration Failed', description: error?.message || 'Unexpected error', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }

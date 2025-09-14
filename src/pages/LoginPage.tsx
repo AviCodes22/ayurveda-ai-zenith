@@ -22,14 +22,11 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // First, get the user's email from their unique_id
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('user_id')
-        .eq('unique_id', uniqueId)
-        .maybeSingle();
+      // Get the email from unique_id using a secure RPC function
+      const { data: email, error: emailError } = await supabase
+        .rpc('get_email_by_unique_id', { p_unique_id: uniqueId });
 
-      if (profileError || !profileData) {
+      if (emailError || !email) {
         toast({
           title: "Login Failed",
           description: "Invalid unique ID. Please check your credentials.",
@@ -38,21 +35,9 @@ const LoginPage = () => {
         return;
       }
 
-      // Get the user's email from auth.users
-      const { data: userData, error: userError } = await supabase.auth.admin.getUserById(profileData.user_id);
-      
-      if (userError || !userData.user?.email) {
-        toast({
-          title: "Login Failed", 
-          description: "Unable to find user account. Please contact support.",
-          variant: "destructive"
-        });
-        return;
-      }
-
       // Sign in with email and password
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: userData.user.email,
+        email: email,
         password: password
       });
 

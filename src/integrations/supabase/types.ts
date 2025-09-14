@@ -176,6 +176,10 @@ export type Database = {
         Args: { role_type: Database["public"]["Enums"]["app_role"] }
         Returns: string
       }
+      get_email_by_unique_id: {
+        Args: { p_unique_id: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "patient" | "doctor" | "administrator"

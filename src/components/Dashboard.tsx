@@ -22,20 +22,29 @@ import { SchedulingInterface } from "@/components/SchedulingInterface";
 import { TherapyPreview3D } from "@/components/TherapyPreview3D";
 import { NotificationCenter } from "@/components/NotificationCenter";
 
+interface UserProfile {
+  unique_id: string;
+  full_name: string;
+  role: 'patient' | 'doctor' | 'administrator';
+}
+
 interface DashboardProps {
   userType: string;
   onLogout: () => void;
+  userProfile?: UserProfile;
 }
 
-export const Dashboard = ({ userType, onLogout }: DashboardProps) => {
+export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [notifications, setNotifications] = useState(3);
 
   const getUserTitle = () => {
     switch (userType) {
       case "patient": return "Patient Portal";
-      case "practitioner": return "Practitioner Dashboard";
-      case "admin": return "Admin Console";
+      case "practitioner": 
+      case "doctor": return "Practitioner Dashboard";
+      case "admin": 
+      case "administrator": return "Admin Console";
       default: return "Dashboard";
     }
   };
@@ -53,7 +62,7 @@ export const Dashboard = ({ userType, onLogout }: DashboardProps) => {
         { id: "therapy", label: "3D Therapy", icon: Activity },
         { id: "progress", label: "Progress", icon: TrendingUp },
       ];
-    } else if (userType === "practitioner") {
+    } else if (userType === "practitioner" || userType === "doctor") {
       return [
         ...common,
         { id: "patients", label: "Patients", icon: Users },
@@ -84,8 +93,8 @@ export const Dashboard = ({ userType, onLogout }: DashboardProps) => {
 
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-sm font-medium capitalize">{userType} User</p>
-              <p className="text-xs text-muted-foreground">Demo Mode</p>
+              <p className="text-sm font-medium">{userProfile?.full_name || "User"}</p>
+              <p className="text-xs text-muted-foreground">ID: {userProfile?.unique_id || "N/A"}</p>
             </div>
             <Button 
               variant="outline" 
@@ -139,8 +148,8 @@ export const Dashboard = ({ userType, onLogout }: DashboardProps) => {
             {activeTab === "overview" && (
               <>
                 {userType === "patient" && <PatientDashboard />}
-                {userType === "practitioner" && <PractitionerDashboard />}
-                {userType === "admin" && <AdminDashboard />}
+                {(userType === "practitioner" || userType === "doctor") && <PractitionerDashboard />}
+                {(userType === "admin" || userType === "administrator") && <AdminDashboard />}
               </>
             )}
             {activeTab === "schedule" && <SchedulingInterface userType={userType} />}

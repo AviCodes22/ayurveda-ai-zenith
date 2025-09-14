@@ -117,8 +117,53 @@ const RegistrationPage = () => {
     return true;
   };
 
+  // Silent validation for button state (no toasts)
+  const isBasicInfoValid = () => {
+    return !!(
+      basicInfo.fullName && 
+      basicInfo.dateOfBirth && 
+      basicInfo.aadharNumber && 
+      basicInfo.email && 
+      basicInfo.password &&
+      basicInfo.password === basicInfo.confirmPassword &&
+      basicInfo.aadharNumber.length === 12
+    );
+  };
+
+  // Validation with user feedback for form submission
+  const validateBasicInfoWithFeedback = () => {
+    if (!basicInfo.fullName || !basicInfo.dateOfBirth || !basicInfo.aadharNumber || !basicInfo.email || !basicInfo.password) {
+      toast({
+        title: "Incomplete Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (basicInfo.password !== basicInfo.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (basicInfo.aadharNumber.length !== 12) {
+      toast({
+        title: "Invalid Aadhar Number",
+        description: "Aadhar number must be 12 digits.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleRegistration = async () => {
-    if (!validateBasicInfo() || !role) return;
+    if (!validateBasicInfoWithFeedback() || !role) return;
     
     setIsLoading(true);
 
@@ -629,7 +674,7 @@ const RegistrationPage = () => {
   const canProceedToNext = () => {
     switch(step) {
       case 1: return role !== null;
-      case 2: return validateBasicInfo();
+      case 2: return isBasicInfoValid();
       case 3: return true; // Role-specific validation can be added here
       default: return false;
     }
@@ -755,7 +800,10 @@ const RegistrationPage = () => {
 
                 {step < 3 ? (
                   <Button
-                    onClick={() => setStep(step + 1)}
+                    onClick={() => {
+                      if (step === 2 && !validateBasicInfoWithFeedback()) return;
+                      setStep(step + 1);
+                    }}
                     disabled={!canProceedToNext()}
                     className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated hover:shadow-glow transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >

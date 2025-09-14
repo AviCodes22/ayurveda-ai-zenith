@@ -4,30 +4,47 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, Calendar, AlertTriangle, TrendingUp, Clock, UserCheck } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-
-const patientData = [
-  { therapy: "Panchakarma", count: 15 },
-  { therapy: "Abhyanga", count: 23 },
-  { therapy: "Shirodhara", count: 18 },
-  { therapy: "Basti", count: 12 },
-];
-
-const scheduleData = [
-  { name: "Completed", value: 78, color: "hsl(var(--success))" },
-  { name: "Pending", value: 15, color: "hsl(var(--warning))" },
-  { name: "Cancelled", value: 7, color: "hsl(var(--destructive))" },
-];
-
-interface PractitionerDashboardProps { displayName?: string }
-export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProps) => {
-  return (
-    <div className="space-y-8">
+const patientData = [{
+  therapy: "Panchakarma",
+  count: 15
+}, {
+  therapy: "Abhyanga",
+  count: 23
+}, {
+  therapy: "Shirodhara",
+  count: 18
+}, {
+  therapy: "Basti",
+  count: 12
+}];
+const scheduleData = [{
+  name: "Completed",
+  value: 78,
+  color: "hsl(var(--success))"
+}, {
+  name: "Pending",
+  value: 15,
+  color: "hsl(var(--warning))"
+}, {
+  name: "Cancelled",
+  value: 7,
+  color: "hsl(var(--destructive))"
+}];
+interface PractitionerDashboardProps {
+  displayName?: string;
+}
+export const PractitionerDashboard = ({
+  displayName
+}: PractitionerDashboardProps) => {
+  return <div className="space-y-8">
       {/* Enhanced Welcome Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="card-elevated gradient-earth p-8 rounded-2xl border border-earth-200/50 hover-glow"
-      >
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} className="card-elevated gradient-earth p-8 rounded-2xl border border-earth-200/50 hover-glow">
         <div className="flex items-center gap-4 mb-4">
           <div className="p-3 gradient-healing rounded-xl shadow-elevated animate-gentle-pulse">
             <Users className="h-6 w-6 text-primary-foreground" />
@@ -46,11 +63,15 @@ export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProp
 
       {/* Enhanced Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 0.1
+      }}>
           <Card className="card-elevated p-6 hover-scale hover-glow group">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-primary/10 group-hover:gradient-healing rounded-xl transition-all duration-300 group-hover:shadow-glow">
@@ -64,29 +85,37 @@ export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProp
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="card-elevated p-6 hover-scale hover-glow group">
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 0.2
+      }}>
+          <Card className="card-elevated p-6 hover-scale hover-glow group rounded-sm">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-success/10 group-hover:bg-success rounded-xl transition-all duration-300 group-hover:shadow-glow">
                 <Calendar className="h-6 w-6 text-success group-hover:text-success-foreground transition-colors" />
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Today's Sessions</p>
-                <p className="text-2xl font-playfair font-semibold text-foreground">8 Scheduled</p>
+                <p className="font-playfair font-semibold text-foreground text-base text-justify">8 Scheduled</p>
               </div>
             </div>
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 0.3
+      }}>
           <Card className="card-elevated p-6 hover-scale hover-glow group">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-warning/10 group-hover:bg-warning rounded-xl transition-all duration-300 group-hover:shadow-glow">
@@ -94,17 +123,21 @@ export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProp
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Needs Attention</p>
-                <p className="text-2xl font-playfair font-semibold text-warning">2 Patients</p>
+                <p className="font-playfair font-semibold text-warning text-base">2 Patients</p>
               </div>
             </div>
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 0.4
+      }}>
           <Card className="card-elevated p-6 hover-scale hover-glow group">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-accent/10 group-hover:gradient-sunrise rounded-xl transition-all duration-300 group-hover:shadow-glow">
@@ -112,7 +145,7 @@ export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProp
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Success Rate</p>
-                <p className="text-2xl font-playfair font-semibold text-success">94.2%</p>
+                <p className="font-playfair font-semibold text-success text-base">94.2%</p>
               </div>
             </div>
           </Card>
@@ -139,31 +172,19 @@ export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProp
           <h3 className="text-lg font-semibold mb-4">Session Status (This Week)</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
-              <Pie
-                data={scheduleData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                dataKey="value"
-              >
-                {scheduleData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
+              <Pie data={scheduleData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} dataKey="value">
+                {scheduleData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
               </Pie>
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
           <div className="flex justify-center gap-4 mt-4">
-            {scheduleData.map((item) => (
-              <div key={item.name} className="flex items-center gap-2">
-                <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: item.color }}
-                />
+            {scheduleData.map(item => <div key={item.name} className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{
+              backgroundColor: item.color
+            }} />
                 <span className="text-sm">{item.name}: {item.value}%</span>
-              </div>
-            ))}
+              </div>)}
           </div>
         </Card>
       </div>
@@ -179,37 +200,31 @@ export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProp
         </div>
         
         <div className="space-y-3">
-          {[
-            {
-              time: "09:00 AM",
-              patient: "Priya Sharma",
-              therapy: "Panchakarma Consultation",
-              status: "confirmed",
-              duration: "45 min"
-            },
-            {
-              time: "10:30 AM", 
-              patient: "Raj Patel",
-              therapy: "Abhyanga Therapy",
-              status: "in-progress",
-              duration: "60 min"
-            },
-            {
-              time: "12:00 PM",
-              patient: "Anita Gupta",
-              therapy: "Shirodhara Session",
-              status: "pending",
-              duration: "90 min"
-            },
-            {
-              time: "02:00 PM",
-              patient: "Vikram Singh",
-              therapy: "Follow-up Consultation",
-              status: "confirmed",
-              duration: "30 min"
-            }
-          ].map((appointment, index) => (
-            <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+          {[{
+          time: "09:00 AM",
+          patient: "Priya Sharma",
+          therapy: "Panchakarma Consultation",
+          status: "confirmed",
+          duration: "45 min"
+        }, {
+          time: "10:30 AM",
+          patient: "Raj Patel",
+          therapy: "Abhyanga Therapy",
+          status: "in-progress",
+          duration: "60 min"
+        }, {
+          time: "12:00 PM",
+          patient: "Anita Gupta",
+          therapy: "Shirodhara Session",
+          status: "pending",
+          duration: "90 min"
+        }, {
+          time: "02:00 PM",
+          patient: "Vikram Singh",
+          therapy: "Follow-up Consultation",
+          status: "confirmed",
+          duration: "30 min"
+        }].map((appointment, index) => <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
               <div className="flex items-center gap-4">
                 <div className="text-center">
                   <div className="text-sm font-medium">{appointment.time}</div>
@@ -221,34 +236,21 @@ export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProp
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge
-                  variant={
-                    appointment.status === "confirmed" ? "secondary" :
-                    appointment.status === "in-progress" ? "default" : "outline"
-                  }
-                >
-                  {appointment.status === "in-progress" ? (
-                    <>
+                <Badge variant={appointment.status === "confirmed" ? "secondary" : appointment.status === "in-progress" ? "default" : "outline"}>
+                  {appointment.status === "in-progress" ? <>
                       <Clock className="h-3 w-3 mr-1" />
                       In Progress
-                    </>
-                  ) : appointment.status === "confirmed" ? (
-                    <>
+                    </> : appointment.status === "confirmed" ? <>
                       <UserCheck className="h-3 w-3 mr-1" />
                       Confirmed
-                    </>
-                  ) : (
-                    "Pending"
-                  )}
+                    </> : "Pending"}
                 </Badge>
                 <Button variant="outline" size="sm">
                   View
                 </Button>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
       </Card>
-    </div>
-  );
+    </div>;
 };

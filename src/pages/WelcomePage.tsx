@@ -7,12 +7,68 @@ const WelcomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Traditional Indian Background Patterns */}
+      <div className="absolute inset-0 opacity-10">
+        {/* Mandala Patterns */}
+        <div className="absolute top-10 right-10 w-40 h-40 border-2 border-primary rounded-full">
+          <div className="absolute inset-4 border border-accent rounded-full">
+            <div className="absolute inset-4 border border-primary/60 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-accent rounded-full"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-20 left-10 w-32 h-32 border-2 border-accent rounded-full">
+          <div className="absolute inset-3 border border-primary rounded-full">
+            <div className="absolute inset-3 border border-accent/60 rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 bg-primary rounded-full"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Lotus Petals */}
+        <div className="absolute top-1/4 left-1/4 w-24 h-24 opacity-30">
+          <div className="absolute inset-0 bg-primary rounded-full transform rotate-0" style={{clipPath: 'ellipse(50% 80% at 50% 100%)'}}></div>
+          <div className="absolute inset-0 bg-primary rounded-full transform rotate-45" style={{clipPath: 'ellipse(50% 80% at 50% 100%)'}}></div>
+          <div className="absolute inset-0 bg-primary rounded-full transform rotate-90" style={{clipPath: 'ellipse(50% 80% at 50% 100%)'}}></div>
+          <div className="absolute inset-0 bg-primary rounded-full transform rotate-135" style={{clipPath: 'ellipse(50% 80% at 50% 100%)'}}></div>
+        </div>
+
+        {/* Paisley Patterns */}
+        <div className="absolute top-3/4 right-1/4 w-16 h-24 bg-accent rounded-full transform rotate-45 opacity-20" 
+             style={{borderRadius: '50% 50% 50% 0'}}></div>
+        <div className="absolute top-1/3 right-1/3 w-12 h-18 bg-primary rounded-full transform -rotate-30 opacity-20" 
+             style={{borderRadius: '50% 50% 50% 0'}}></div>
+
+        {/* Traditional Geometric Patterns */}
+        <div className="absolute bottom-1/4 right-1/5 w-20 h-20 border border-primary transform rotate-45 opacity-15">
+          <div className="absolute inset-2 border border-accent transform -rotate-45">
+            <div className="absolute inset-1 bg-primary/20 transform rotate-45"></div>
+          </div>
+        </div>
+
+        {/* Sanskrit Om Symbol Background */}
+        <div className="absolute top-1/2 left-1/6 text-6xl text-primary/10 font-bold select-none">ॐ</div>
+        
+        {/* Herbal Leaf Patterns */}
+        <div className="absolute bottom-1/3 left-2/3 opacity-15">
+          <div className="w-8 h-12 bg-primary rounded-full transform -rotate-12" style={{borderRadius: '50% 100% 50% 100%'}}></div>
+          <div className="w-6 h-10 bg-accent rounded-full transform rotate-45 -mt-6 ml-2" style={{borderRadius: '50% 100% 50% 100%'}}></div>
+          <div className="w-4 h-8 bg-primary/60 rounded-full transform -rotate-30 -mt-4 ml-1" style={{borderRadius: '50% 100% 50% 100%'}}></div>
+        </div>
+
+        {/* Traditional Border Elements */}
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-accent/20 to-transparent"></div>
+        <div className="absolute top-0 bottom-0 left-0 w-2 bg-gradient-to-b from-transparent via-primary/20 to-transparent"></div>
+        <div className="absolute top-0 bottom-0 right-0 w-2 bg-gradient-to-b from-transparent via-accent/20 to-transparent"></div>
+      </div>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="text-center max-w-2xl mx-auto"
+        className="text-center max-w-2xl mx-auto relative z-10"
       >
         {/* Logo Section */}
         <motion.div
@@ -79,9 +135,9 @@ const WelcomePage = () => {
           transition={{ delay: 0.8, duration: 1 }}
           className="absolute inset-0 pointer-events-none"
         >
-          <div className="absolute top-1/4 left-10 w-20 h-20 bg-primary/5 rounded-full blur-xl"></div>
-          <div className="absolute bottom-1/3 right-16 w-32 h-32 bg-accent/5 rounded-full blur-2xl"></div>
-          <div className="absolute top-3/4 left-1/4 w-16 h-16 bg-secondary/5 rounded-full blur-lg"></div>
+          <div className="absolute top-1/4 left-10 w-20 h-20 bg-primary/5 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-1/3 right-16 w-32 h-32 bg-accent/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
+          <div className="absolute top-3/4 left-1/4 w-16 h-16 bg-secondary/5 rounded-full blur-lg animate-pulse delay-500"></div>
         </motion.div>
       </motion.div>
     </div>

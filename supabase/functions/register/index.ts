@@ -12,6 +12,14 @@ const corsHeaders = {
 
 type UserRole = "patient" | "doctor" | "administrator";
 
+type JsonResp = {
+  success?: boolean;
+  user_id?: string;
+  unique_id?: string;
+  error?: string;
+  detail?: string;
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -23,7 +31,7 @@ serve(async (req) => {
 
     if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
       return new Response(
-        JSON.stringify({ error: "Missing Supabase service configuration" }),
+        JSON.stringify({ error: "Missing Supabase service configuration" } satisfies JsonResp),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -58,7 +66,7 @@ serve(async (req) => {
     // Basic validation
     if (!email || !password || !fullName || !dateOfBirth || !aadharNumber || !role) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ error: "Missing required fields" } satisfies JsonResp),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -73,38 +81,47 @@ serve(async (req) => {
 
       if (workerErr || !worker || worker.is_active !== true) {
         return new Response(
-          JSON.stringify({ error: "Invalid or inactive administrator worker ID" }),
+          JSON.stringify({ error: "Invalid or inactive administrator worker ID" } satisfies JsonResp),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
     }
 
-    // Create auth user (email_confirm true to allow immediate profile creation)
-    const { data: created, error: createErr } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-    });
-
-    if (createErr || !created?.user) {
-      return new Response(
-        JSON.stringify({ error: createErr?.message || "Failed to create user" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    // Check if user already exists
+    const { data: existingUserData, error: existingErr } = await supabase.auth.admin.getUserByEmail(email);
+    if (existingErr) {
+      console.error("getUserByEmail error", existingErr);
     }
 
-    const userId = created.user.id;
+    let userId: string | null = existingUserData?.user?.id ?? null;
+
+    // Create auth user if not exists
+    if (!userId) {
+      const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+      });
+
+      if (createErr || !created?.user) {
+        return new Response(
+          JSON.stringify({ error: createErr?.message || "Failed to create user" } satisfies JsonResp),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      userId = created.user.id;
+    }
 
     // Generate unique ID via RPC
     const { data: uniqueId, error: uidErr } = await supabase.rpc("generate_unique_id", { role_type: role });
     if (uidErr || !uniqueId) {
       return new Response(
-        JSON.stringify({ error: "Failed to generate unique ID" }),
+        JSON.stringify({ error: "Failed to generate unique ID", detail: uidErr?.message } satisfies JsonResp),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    // Create profile
+    // Create profile (idempotent-ish: ignore duplicate aadhar/unique constraint violations)
     const { error: profileErr } = await supabase.from("profiles").insert({
       user_id: userId,
       unique_id: uniqueId,
@@ -115,8 +132,20 @@ serve(async (req) => {
     });
 
     if (profileErr) {
+      // If the user already has a profile, don't fail hard – fetch and return existing unique_id
+      if (profileErr.code === "23505") {
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("unique_id")
+          .eq("user_id", userId)
+          .maybeSingle();
+        return new Response(
+          JSON.stringify({ success: true, user_id: userId, unique_id: prof?.unique_id ?? uniqueId } satisfies JsonResp),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
       return new Response(
-        JSON.stringify({ error: profileErr.message || "Failed to create profile" }),
+        JSON.stringify({ error: profileErr.message || "Failed to create profile" } satisfies JsonResp),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -127,9 +156,9 @@ serve(async (req) => {
         user_id: userId,
         ...patientDetails,
       });
-      if (error) {
+      if (error && error.code !== "23505") {
         return new Response(
-          JSON.stringify({ error: error.message || "Failed to save patient details" }),
+          JSON.stringify({ error: error.message || "Failed to save patient details" } satisfies JsonResp),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
@@ -140,21 +169,22 @@ serve(async (req) => {
         user_id: userId,
         ...doctorDetails,
       });
-      if (error) {
+      if (error && error.code !== "23505") {
         return new Response(
-          JSON.stringify({ error: error.message || "Failed to save doctor verification" }),
+          JSON.stringify({ error: error.message || "Failed to save doctor verification" } satisfies JsonResp),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
     }
 
     return new Response(
-      JSON.stringify({ success: true, user_id: userId, unique_id: uniqueId }),
+      JSON.stringify({ success: true, user_id: userId, unique_id: uniqueId } satisfies JsonResp),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
+    console.error("register function error", e);
     return new Response(
-      JSON.stringify({ error: e?.message || "Unknown error" }),
+      JSON.stringify({ error: e?.message || "Unknown error" } satisfies JsonResp),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }

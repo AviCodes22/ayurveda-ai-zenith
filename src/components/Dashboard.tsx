@@ -79,12 +79,45 @@ export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) =
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background relative overflow-hidden">
+      {/* Traditional Indian Background Patterns */}
+      <div className="absolute inset-0 opacity-25">
+        {/* Mandala Patterns */}
+        <div className="absolute top-10 right-10 w-40 h-40 border-4 border-primary/60 rounded-full shadow-glow animate-pulse">
+          <div className="absolute inset-4 border-2 border-accent/80 rounded-full">
+            <div className="absolute inset-4 border-2 border-primary rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-accent rounded-full shadow-lg"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-20 left-10 w-32 h-32 border-4 border-accent/70 rounded-full shadow-glow animate-pulse delay-500">
+          <div className="absolute inset-3 border-2 border-primary/80 rounded-full">
+            <div className="absolute inset-3 border-2 border-accent rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 bg-primary rounded-full shadow-lg"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sanskrit Om Symbol Background */}
+        <div className="absolute top-1/2 left-1/6 text-6xl text-primary/25 font-bold select-none animate-pulse delay-800">ॐ</div>
+        
+        {/* Paisley Patterns */}
+        <div className="absolute top-3/4 right-1/4 w-16 h-24 bg-accent/60 rounded-full transform rotate-45 opacity-50 shadow-lg animate-pulse delay-700" 
+             style={{borderRadius: '50% 50% 50% 0'}}></div>
+
+        {/* Traditional Border Elements */}
+        <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-transparent via-primary/40 to-transparent shadow-lg"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-r from-transparent via-accent/40 to-transparent shadow-lg"></div>
+        <div className="absolute top-0 bottom-0 left-0 w-3 bg-gradient-to-b from-transparent via-primary/40 to-transparent shadow-lg"></div>
+        <div className="absolute top-0 bottom-0 right-0 w-3 bg-gradient-to-b from-transparent via-accent/40 to-transparent shadow-lg"></div>
+      </div>
+
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-40 relative">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <Leaf className="h-8 w-8 text-primary" />
+            <Leaf className="h-8 w-8 text-primary drop-shadow-sm" />
             <div>
               <h1 className="text-xl font-bold text-primary">AyurTech Pro</h1>
               <p className="text-sm text-muted-foreground">{getUserTitle()}</p>
@@ -100,7 +133,7 @@ export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) =
               variant="outline" 
               size="sm"
               onClick={onLogout}
-              className="hover:bg-destructive hover:text-destructive-foreground"
+              className="border-primary/30 bg-card/50 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all duration-300"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout
@@ -112,7 +145,7 @@ export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) =
       {/* Main Content */}
       <div className="flex">
         {/* Sidebar Navigation */}
-        <aside className="w-64 border-r border-border bg-card/30 min-h-[calc(100vh-73px)]">
+        <aside className="w-64 border-r border-border bg-card/80 backdrop-blur-sm min-h-[calc(100vh-73px)] relative z-10">
           <nav className="p-4">
             {getNavItems().map((item) => (
               <Button
@@ -138,7 +171,7 @@ export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) =
         </aside>
 
         {/* Content Area */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 relative z-10">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 20 }}

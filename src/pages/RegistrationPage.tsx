@@ -636,12 +636,55 @@ const RegistrationPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Traditional Indian Background Patterns */}
+      <div className="absolute inset-0 opacity-25">
+        {/* Mandala Patterns */}
+        <div className="absolute top-10 right-10 w-40 h-40 border-4 border-primary/60 rounded-full shadow-glow animate-pulse">
+          <div className="absolute inset-4 border-2 border-accent/80 rounded-full">
+            <div className="absolute inset-4 border-2 border-primary rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-accent rounded-full shadow-lg"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-20 left-10 w-32 h-32 border-4 border-accent/70 rounded-full shadow-glow animate-pulse delay-500">
+          <div className="absolute inset-3 border-2 border-primary/80 rounded-full">
+            <div className="absolute inset-3 border-2 border-accent rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 bg-primary rounded-full shadow-lg"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Lotus Petals */}
+        <div className="absolute top-1/4 left-1/4 w-24 h-24 opacity-60 animate-pulse delay-300">
+          <div className="absolute inset-0 bg-primary/70 rounded-full transform rotate-0" style={{clipPath: 'ellipse(50% 80% at 50% 100%)'}}></div>
+          <div className="absolute inset-0 bg-primary/70 rounded-full transform rotate-45" style={{clipPath: 'ellipse(50% 80% at 50% 100%)'}}></div>
+          <div className="absolute inset-0 bg-primary/70 rounded-full transform rotate-90" style={{clipPath: 'ellipse(50% 80% at 50% 100%)'}}></div>
+          <div className="absolute inset-0 bg-primary/70 rounded-full transform rotate-135" style={{clipPath: 'ellipse(50% 80% at 50% 100%)'}}></div>
+        </div>
+
+        {/* Sanskrit Om Symbol Background */}
+        <div className="absolute top-1/2 left-1/6 text-6xl text-primary/25 font-bold select-none animate-pulse delay-800">ॐ</div>
+        
+        {/* Paisley Patterns */}
+        <div className="absolute top-3/4 right-1/4 w-16 h-24 bg-accent/60 rounded-full transform rotate-45 opacity-50 shadow-lg animate-pulse delay-700" 
+             style={{borderRadius: '50% 50% 50% 0'}}></div>
+        <div className="absolute top-1/3 right-1/3 w-12 h-18 bg-primary/60 rounded-full transform -rotate-30 opacity-50 shadow-lg animate-pulse delay-1000" 
+             style={{borderRadius: '50% 50% 50% 0'}}></div>
+
+        {/* Traditional Border Elements */}
+        <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-transparent via-primary/40 to-transparent shadow-lg"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-r from-transparent via-accent/40 to-transparent shadow-lg"></div>
+        <div className="absolute top-0 bottom-0 left-0 w-3 bg-gradient-to-b from-transparent via-primary/40 to-transparent shadow-lg"></div>
+        <div className="absolute top-0 bottom-0 right-0 w-3 bg-gradient-to-b from-transparent via-accent/40 to-transparent shadow-lg"></div>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl"
+        className="w-full max-w-2xl relative z-10"
       >
         {/* Logo Header */}
         <motion.div
@@ -652,11 +695,11 @@ const RegistrationPage = () => {
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="relative">
-              <Leaf className="w-10 h-10 text-primary" />
-              <Heart className="w-5 h-5 text-accent absolute -top-1 -right-1" />
+              <Leaf className="w-10 h-10 text-primary drop-shadow-sm" />
+              <Heart className="w-5 h-5 text-accent absolute -top-1 -right-1 drop-shadow-sm" />
             </div>
             <div className="text-left">
-              <h1 className="text-3xl font-bold bg-gradient-healing bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-primary">
                 AyurTech
               </h1>
               <p className="text-xl font-semibold text-accent">Pro</p>
@@ -714,7 +757,7 @@ const RegistrationPage = () => {
                   <Button
                     onClick={() => setStep(step + 1)}
                     disabled={!canProceedToNext()}
-                    className="bg-gradient-healing hover:shadow-glow"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated hover:shadow-glow transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -723,7 +766,7 @@ const RegistrationPage = () => {
                   <Button
                     onClick={handleRegistration}
                     disabled={isLoading || !canProceedToNext()}
-                    className="bg-gradient-healing hover:shadow-glow"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated hover:shadow-glow transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? "Creating Account..." : "Complete Registration"}
                   </Button>

@@ -87,30 +87,29 @@ serve(async (req) => {
       }
     }
 
-    // Check if user already exists
-    const { data: existingUserData, error: existingErr } = await supabase.auth.admin.getUserByEmail(email);
-    if (existingErr) {
-      console.error("getUserByEmail error", existingErr);
-    }
+    // Create auth user
+    let userId: string | null = null;
+    const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    });
 
-    let userId: string | null = existingUserData?.user?.id ?? null;
-
-    // Create auth user if not exists
-    if (!userId) {
-      const { data: created, error: createErr } = await supabase.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-      });
-
-      if (createErr || !created?.user) {
+    if (createErr) {
+      // If email already exists, return a clear message
+      if ((createErr as any).message?.toLowerCase().includes("already been registered") || (createErr as any).code === "email_exists") {
         return new Response(
-          JSON.stringify({ error: createErr?.message || "Failed to create user" } satisfies JsonResp),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          JSON.stringify({ error: "This email is already registered. Please sign in instead." } satisfies JsonResp),
+          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
-      userId = created.user.id;
+      return new Response(
+        JSON.stringify({ error: createErr.message || "Failed to create user" } satisfies JsonResp),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
+
+    userId = created!.user!.id;
 
     // Generate unique ID via RPC
     const { data: uniqueId, error: uidErr } = await supabase.rpc("generate_unique_id", { role_type: role });

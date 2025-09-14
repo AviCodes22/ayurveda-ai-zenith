@@ -13,7 +13,8 @@ const healthData = [
   { date: "Fri", wellbeing: 88, energy: 90 },
 ];
 
-export const PatientDashboard = () => {
+interface PatientDashboardProps { displayName?: string }
+export const PatientDashboard = ({ displayName }: PatientDashboardProps) => {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -22,7 +23,7 @@ export const PatientDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         className="bg-gradient-to-r from-primary/10 to-primary-light/10 p-6 rounded-xl border border-primary/20"
       >
-        <h2 className="text-2xl font-bold mb-2">Welcome back, Priya!</h2>
+        <h2 className="text-2xl font-bold mb-2">Welcome back, {displayName || 'User'}!</h2>
         <p className="text-muted-foreground">Your wellness journey continues. Today's focus: Panchakarma Detox Phase 2</p>
       </motion.div>
 

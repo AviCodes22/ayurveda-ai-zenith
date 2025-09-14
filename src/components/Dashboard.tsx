@@ -180,8 +180,8 @@ export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) =
           >
             {activeTab === "overview" && (
               <>
-                {userType === "patient" && <PatientDashboard />}
-                {(userType === "practitioner" || userType === "doctor") && <PractitionerDashboard />}
+                {userType === "patient" && <PatientDashboard displayName={userProfile?.full_name} />}
+                {(userType === "practitioner" || userType === "doctor") && <PractitionerDashboard displayName={userProfile?.full_name} />}
                 {(userType === "admin" || userType === "administrator") && <AdminDashboard />}
               </>
             )}

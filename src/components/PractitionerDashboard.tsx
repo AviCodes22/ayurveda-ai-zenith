@@ -18,7 +18,8 @@ const scheduleData = [
   { name: "Cancelled", value: 7, color: "hsl(var(--destructive))" },
 ];
 
-export const PractitionerDashboard = () => {
+interface PractitionerDashboardProps { displayName?: string }
+export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProps) => {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -27,7 +28,7 @@ export const PractitionerDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         className="bg-gradient-to-r from-secondary/20 to-accent/20 p-6 rounded-xl border border-secondary/30"
       >
-        <h2 className="text-2xl font-bold mb-2">Good morning, Dr. Sharma!</h2>
+        <h2 className="text-2xl font-bold mb-2">Good morning, {displayName || 'Practitioner'}!</h2>
         <p className="text-muted-foreground">You have 8 appointments today. 2 require immediate attention.</p>
       </motion.div>
 

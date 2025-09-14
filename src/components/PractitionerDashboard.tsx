@@ -55,7 +55,7 @@ export const PractitionerDashboard = ({
             </h2>
             <p className="text-muted-foreground text-lg">
               You have <span className="font-semibold text-primary">8 appointments</span> today. 
-              <span className="font-medium text-warning"> 2 require immediate attention</span>.
+              <span className="font-medium text-destructive"> 2 require immediate attention</span>.
             </p>
           </div>
         </div>

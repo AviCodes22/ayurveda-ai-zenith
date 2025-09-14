@@ -21,13 +21,13 @@ const WelcomePage = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="flex items-center justify-center mb-8"
         >
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-card/50 border border-primary/10 shadow-gentle">
+          <div className="flex items-center gap-3 p-6 rounded-2xl bg-card border border-primary/20 shadow-elevated backdrop-blur-sm">
             <div className="relative">
-              <Leaf className="w-12 h-12 text-primary" />
-              <Heart className="w-6 h-6 text-accent absolute -top-1 -right-1" />
+              <Leaf className="w-12 h-12 text-primary drop-shadow-sm" />
+              <Heart className="w-6 h-6 text-accent absolute -top-1 -right-1 drop-shadow-sm" />
             </div>
             <div className="text-left">
-              <h1 className="text-4xl font-bold bg-gradient-healing bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold text-primary">
                 AyurTech
               </h1>
               <p className="text-2xl font-semibold text-accent">Pro</p>

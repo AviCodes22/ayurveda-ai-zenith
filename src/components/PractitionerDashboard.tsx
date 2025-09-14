@@ -21,66 +21,102 @@ const scheduleData = [
 interface PractitionerDashboardProps { displayName?: string }
 export const PractitionerDashboard = ({ displayName }: PractitionerDashboardProps) => {
   return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
+    <div className="space-y-8">
+      {/* Enhanced Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-secondary/20 to-accent/20 p-6 rounded-xl border border-secondary/30"
+        className="card-elevated gradient-earth p-8 rounded-2xl border border-earth-200/50 hover-glow"
       >
-        <h2 className="text-2xl font-bold mb-2">Good morning, {displayName || 'Practitioner'}!</h2>
-        <p className="text-muted-foreground">You have 8 appointments today. 2 require immediate attention.</p>
+        <div className="flex items-center gap-4 mb-4">
+          <div className="p-3 gradient-healing rounded-xl shadow-elevated animate-gentle-pulse">
+            <Users className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-playfair font-semibold text-foreground mb-2">
+              Good morning, {displayName || 'Practitioner'}!
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              You have <span className="font-semibold text-primary">8 appointments</span> today. 
+              <span className="font-medium text-warning"> 2 require immediate attention</span>.
+            </p>
+          </div>
+        </div>
       </motion.div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Users className="h-5 w-5 text-primary" />
+      {/* Enhanced Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="card-elevated p-6 hover-scale hover-glow group">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 group-hover:gradient-healing rounded-xl transition-all duration-300 group-hover:shadow-glow">
+                <Users className="h-6 w-6 text-primary group-hover:text-primary-foreground transition-colors" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Active Patients</p>
+                <p className="text-2xl font-playfair font-semibold text-foreground">127</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Active Patients</p>
-              <p className="font-semibold">127</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-success/10 rounded-lg">
-              <Calendar className="h-5 w-5 text-success" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="card-elevated p-6 hover-scale hover-glow group">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-success/10 group-hover:bg-success rounded-xl transition-all duration-300 group-hover:shadow-glow">
+                <Calendar className="h-6 w-6 text-success group-hover:text-success-foreground transition-colors" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Today's Sessions</p>
+                <p className="text-2xl font-playfair font-semibold text-foreground">8 Scheduled</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Today's Sessions</p>
-              <p className="font-semibold">8 Scheduled</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-warning/10 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-warning" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="card-elevated p-6 hover-scale hover-glow group">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-warning/10 group-hover:bg-warning rounded-xl transition-all duration-300 group-hover:shadow-glow">
+                <AlertTriangle className="h-6 w-6 text-warning group-hover:text-warning-foreground transition-colors" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Needs Attention</p>
+                <p className="text-2xl font-playfair font-semibold text-warning">2 Patients</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Needs Attention</p>
-              <p className="font-semibold">2 Patients</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-accent/10 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-accent" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card className="card-elevated p-6 hover-scale hover-glow group">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-accent/10 group-hover:gradient-sunrise rounded-xl transition-all duration-300 group-hover:shadow-glow">
+                <TrendingUp className="h-6 w-6 text-accent group-hover:text-accent-foreground transition-colors" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Success Rate</p>
+                <p className="text-2xl font-playfair font-semibold text-success">94.2%</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Success Rate</p>
-              <p className="font-semibold">94.2%</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

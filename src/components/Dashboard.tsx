@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { 
   Calendar, 
   BarChart3, 
@@ -79,152 +79,175 @@ export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) =
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background relative overflow-hidden">
-      {/* Traditional Indian Background Patterns */}
-      <div className="absolute inset-0 opacity-25">
-        {/* Mandala Patterns */}
-        <div className="absolute top-10 right-10 w-40 h-40 border-4 border-primary/60 rounded-full shadow-glow animate-pulse">
-          <div className="absolute inset-4 border-2 border-accent/80 rounded-full">
-            <div className="absolute inset-4 border-2 border-primary rounded-full flex items-center justify-center">
-              <div className="w-8 h-8 bg-accent rounded-full shadow-lg"></div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-sage-50 to-earth-50 relative overflow-hidden pattern-lotus">
+      {/* Enhanced Traditional Background Patterns */}
+      <div className="absolute inset-0 opacity-20">
+        {/* Floating Mandala Patterns with improved animations */}
+        <div className="absolute top-10 right-10 w-40 h-40 border-4 border-primary/40 rounded-full shadow-glow animate-float">
+          <div className="absolute inset-4 border-2 border-accent/60 rounded-full">
+            <div className="absolute inset-4 border-2 border-primary/70 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-healing rounded-full shadow-elevated animate-gentle-pulse"></div>
             </div>
           </div>
         </div>
         
-        <div className="absolute bottom-20 left-10 w-32 h-32 border-4 border-accent/70 rounded-full shadow-glow animate-pulse delay-500">
-          <div className="absolute inset-3 border-2 border-primary/80 rounded-full">
-            <div className="absolute inset-3 border-2 border-accent rounded-full flex items-center justify-center">
-              <div className="w-6 h-6 bg-primary rounded-full shadow-lg"></div>
+        <div className="absolute bottom-20 left-10 w-32 h-32 border-4 border-sage-300/60 rounded-full shadow-glow animate-float" style={{animationDelay: '2s'}}>
+          <div className="absolute inset-3 border-2 border-earth-400/60 rounded-full">
+            <div className="absolute inset-3 border-2 border-accent/70 rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 gradient-sunrise rounded-full shadow-elevated animate-gentle-pulse"></div>
             </div>
           </div>
         </div>
 
-        {/* Sanskrit Om Symbol Background */}
-        <div className="absolute top-1/2 left-1/6 text-6xl text-primary/25 font-bold select-none animate-pulse delay-800">ॐ</div>
-        
-        {/* Paisley Patterns */}
-        <div className="absolute top-3/4 right-1/4 w-16 h-24 bg-accent/60 rounded-full transform rotate-45 opacity-50 shadow-lg animate-pulse delay-700" 
-             style={{borderRadius: '50% 50% 50% 0'}}></div>
-
-        {/* Traditional Border Elements */}
-        <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-transparent via-primary/40 to-transparent shadow-lg"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-r from-transparent via-accent/40 to-transparent shadow-lg"></div>
-        <div className="absolute top-0 bottom-0 left-0 w-3 bg-gradient-to-b from-transparent via-primary/40 to-transparent shadow-lg"></div>
-        <div className="absolute top-0 bottom-0 right-0 w-3 bg-gradient-to-b from-transparent via-accent/40 to-transparent shadow-lg"></div>
+        {/* Sacred geometry patterns */}
+        <div className="absolute top-1/3 left-1/3 w-24 h-24 opacity-30 animate-float" style={{animationDelay: '1s'}}>
+          <div className="absolute inset-0 bg-gradient-sage rounded-full transform rotate-0" style={{clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)'}}></div>
+        </div>
       </div>
 
-      {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-40 relative">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Leaf className="h-8 w-8 text-primary drop-shadow-sm" />
-            <div>
-              <h1 className="text-xl font-bold text-primary">AyurTech Pro</h1>
-              <p className="text-sm text-muted-foreground">{getUserTitle()}</p>
+      <div className="relative z-10 flex h-screen">
+        {/* Enhanced Sidebar */}
+        <div className="w-72 card-elevated border-r border-border/50 backdrop-blur-xl">
+          <div className="p-6 border-b border-border/50">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="relative">
+                <Leaf className="w-8 h-8 text-primary drop-shadow-sm" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 gradient-healing rounded-full animate-gentle-pulse"></div>
+              </div>
+              <div>
+                <h1 className="text-2xl font-playfair font-semibold text-foreground">AyurTech</h1>
+                <p className="text-lg font-playfair text-accent font-medium">Pro</p>
+              </div>
+            </div>
+            <div className="text-center">
+              <h2 className="font-playfair text-xl font-medium text-foreground mb-1">{getUserTitle()}</h2>
+              {userProfile && (
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-primary">{userProfile.full_name}</p>
+                  <Badge className="status-active text-xs">{userProfile.unique_id}</Badge>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium">{userProfile?.full_name || "User"}</p>
-              <p className="text-xs text-muted-foreground">ID: {userProfile?.unique_id || "N/A"}</p>
+          <nav className="flex-1 px-4 py-6">
+            <div className="space-y-2">
+              {getNavItems().map((item, index) => (
+                <motion.button
+                  key={item.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-300 hover-scale group ${
+                    activeTab === item.id 
+                      ? 'gradient-healing text-primary-foreground shadow-elevated' 
+                      : 'hover:bg-sage-100/50 hover:shadow-gentle text-foreground'
+                  }`}
+                >
+                  <item.icon className={`h-5 w-5 transition-colors ${
+                    activeTab === item.id ? 'text-primary-foreground' : 'text-primary group-hover:text-primary'
+                  }`} />
+                  <span className="font-medium flex-1">{item.label}</span>
+                  {item.badge && (
+                    <Badge className="bg-destructive text-destructive-foreground text-xs animate-gentle-pulse">
+                      {item.badge}
+                    </Badge>
+                  )}
+                </motion.button>
+              ))}
             </div>
-            <Button 
-              variant="outline" 
-              size="sm"
+          </nav>
+
+          <div className="p-4 border-t border-border/50">
+            <Button
               onClick={onLogout}
-              className="border-primary/30 bg-card/50 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all duration-300"
+              variant="ghost"
+              className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300"
             >
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="h-5 w-5" />
               Logout
             </Button>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <div className="flex">
-        {/* Sidebar Navigation */}
-        <aside className="w-64 border-r border-border bg-card/80 backdrop-blur-sm min-h-[calc(100vh-73px)] relative z-10">
-          <nav className="p-4">
-            {getNavItems().map((item) => (
-              <Button
-                key={item.id}
-                variant={activeTab === item.id ? "default" : "ghost"}
-                className={`w-full justify-start mb-2 ${
-                  activeTab === item.id 
-                    ? "bg-primary text-primary-foreground shadow-sm" 
-                    : "hover:bg-muted"
-                }`}
-                onClick={() => setActiveTab(item.id)}
-              >
-                <item.icon className="h-4 w-4 mr-3" />
-                {item.label}
-                {item.badge && (
-                  <span className="ml-auto bg-destructive text-destructive-foreground text-xs px-2 py-1 rounded-full">
-                    {item.badge}
-                  </span>
-                )}
-              </Button>
-            ))}
-          </nav>
-        </aside>
+        {/* Enhanced Main Content */}
+        <div className="flex-1 overflow-auto">
+          <div className="p-8">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="space-y-6"
+            >
+              {activeTab === "overview" && (
+                <>
+                  {userType === "patient" && <PatientDashboard displayName={userProfile?.full_name} />}
+                  {(userType === "practitioner" || userType === "doctor") && <PractitionerDashboard displayName={userProfile?.full_name} />}
+                  {(userType === "admin" || userType === "administrator") && <AdminDashboard />}
+                </>
+              )}
 
-        {/* Content Area */}
-        <main className="flex-1 p-6 relative z-10">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {activeTab === "overview" && (
-              <>
-                {userType === "patient" && <PatientDashboard displayName={userProfile?.full_name} />}
-                {(userType === "practitioner" || userType === "doctor") && <PractitionerDashboard displayName={userProfile?.full_name} />}
-                {(userType === "admin" || userType === "administrator") && <AdminDashboard />}
-              </>
-            )}
-            {activeTab === "schedule" && <SchedulingInterface userType={userType} />}
-            {activeTab === "therapy" && <TherapyPreview3D />}
-            {activeTab === "notifications" && (
-              <NotificationCenter 
-                onMarkAsRead={() => setNotifications(0)} 
-              />
-            )}
-            {activeTab === "progress" && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Therapy Progress</h2>
-                <p className="text-muted-foreground">Progress tracking coming soon...</p>
-              </Card>
-            )}
-            {activeTab === "patients" && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Patient Management</h2>
-                <p className="text-muted-foreground">Patient management interface coming soon...</p>
-              </Card>
-            )}
-            {activeTab === "analytics" && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">System Analytics</h2>
-                <p className="text-muted-foreground">Advanced analytics dashboard coming soon...</p>
-              </Card>
-            )}
-            {activeTab === "users" && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">User Management</h2>
-                <p className="text-muted-foreground">User management interface coming soon...</p>
-              </Card>
-            )}
-            {activeTab === "settings" && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">System Settings</h2>
-                <p className="text-muted-foreground">Settings panel coming soon...</p>
-              </Card>
-            )}
-          </motion.div>
-        </main>
-      </div>
+              {activeTab === "schedule" && (
+                <Card className="card-elevated p-8">
+                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">Schedule Management</h2>
+                  <SchedulingInterface userType={userType} />
+                </Card>
+              )}
+
+              {activeTab === "therapy" && (
+                <Card className="card-elevated p-8">
+                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">3D Therapy Preview</h2>
+                  <TherapyPreview3D />
+                </Card>
+              )}
+
+              {activeTab === "notifications" && (
+                <Card className="card-elevated p-8">
+                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">Notifications</h2>
+                  <NotificationCenter onMarkAsRead={() => setNotifications(prev => Math.max(0, prev - 1))} />
+                </Card>
+              )}
+
+              {activeTab === "progress" && (
+                <Card className="card-elevated p-8">
+                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">Progress Tracking</h2>
+                  <p className="text-muted-foreground">Detailed progress tracking coming soon...</p>
+                </Card>
+              )}
+
+              {activeTab === "patients" && (
+                <Card className="card-elevated p-8">
+                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">Patient Management</h2>
+                  <p className="text-muted-foreground">Patient management interface coming soon...</p>
+                </Card>
+              )}
+
+              {activeTab === "analytics" && (
+                <Card className="card-elevated p-8">
+                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">Analytics Dashboard</h2>
+                  <p className="text-muted-foreground">Analytics dashboard coming soon...</p>
+                </Card>
+              )}
+
+              {activeTab === "users" && (
+                <Card className="card-elevated p-8">
+                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">User Management</h2>
+                  <p className="text-muted-foreground">User management interface coming soon...</p>
+                </Card>
+              )}
+
+              {activeTab === "settings" && (
+                <Card className="card-elevated p-8">
+                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">System Settings</h2>
+                  <p className="text-muted-foreground">Settings panel coming soon...</p>
+                </Card>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </div>  
     </div>
   );
 };

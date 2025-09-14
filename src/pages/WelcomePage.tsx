@@ -65,7 +65,7 @@ const WelcomePage = () => {
         >
           <Button
             onClick={() => navigate('/login')}
-            className="px-12 py-4 text-lg font-semibold bg-gradient-healing hover:shadow-glow transition-all duration-300 rounded-2xl"
+            className="px-12 py-4 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated hover:shadow-glow transition-all duration-300 rounded-2xl border border-primary/20"
             size="lg"
           >
             Begin Your Wellness Journey

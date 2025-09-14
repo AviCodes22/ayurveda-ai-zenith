@@ -22,9 +22,12 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
+      // Normalize unique ID to avoid case/whitespace mismatches
+      const normalizedUniqueId = uniqueId.trim().toUpperCase();
+
       // Get the email from unique_id using a secure RPC function
       const { data: email, error: emailError } = await supabase
-        .rpc('get_email_by_unique_id', { p_unique_id: uniqueId });
+        .rpc('get_email_by_unique_id', { p_unique_id: normalizedUniqueId });
 
       if (emailError || !email) {
         toast({

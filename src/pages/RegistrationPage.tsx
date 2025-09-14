@@ -202,7 +202,13 @@ const RegistrationPage = () => {
 
       const { data, error } = await supabase.functions.invoke('register', { body: payload });
       if (error) {
-        toast({ title: 'Registration Failed', description: error.message, variant: 'destructive' });
+        const msg = (error as any)?.message || 'Registration failed.';
+        toast({ title: 'Registration Failed', description: msg, variant: 'destructive' });
+        return;
+      }
+
+      if (!data?.success) {
+        toast({ title: 'Registration Failed', description: data?.error || 'Please try again.', variant: 'destructive' });
         return;
       }
 

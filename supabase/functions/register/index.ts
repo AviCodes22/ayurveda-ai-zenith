@@ -13,7 +13,7 @@ const corsHeaders = {
 type UserRole = "patient" | "doctor" | "administrator";
 
 type JsonResp = {
-  success?: boolean;
+  success: boolean;
   user_id?: string;
   unique_id?: string;
   error?: string;
@@ -31,8 +31,8 @@ serve(async (req) => {
 
     if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
       return new Response(
-        JSON.stringify({ error: "Missing Supabase service configuration" } satisfies JsonResp),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({ success: false, error: "Missing Supabase service configuration" } satisfies JsonResp),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -66,8 +66,8 @@ serve(async (req) => {
     // Basic validation
     if (!email || !password || !fullName || !dateOfBirth || !aadharNumber || !role) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields" } satisfies JsonResp),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({ success: false, error: "Missing required fields" } satisfies JsonResp),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -81,46 +81,42 @@ serve(async (req) => {
 
       if (workerErr || !worker || worker.is_active !== true) {
         return new Response(
-          JSON.stringify({ error: "Invalid or inactive administrator worker ID" } satisfies JsonResp),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          JSON.stringify({ success: false, error: "Invalid or inactive administrator worker ID" } satisfies JsonResp),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
     }
 
     // Create auth user
-    let userId: string | null = null;
     const { data: created, error: createErr } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
     });
 
-    if (createErr) {
-      // If email already exists, return a clear message
-      if ((createErr as any).message?.toLowerCase().includes("already been registered") || (createErr as any).code === "email_exists") {
-        return new Response(
-          JSON.stringify({ error: "This email is already registered. Please sign in instead." } satisfies JsonResp),
-          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
+    if (createErr || !created?.user) {
+      const msg = (createErr as any)?.message || "Failed to create user";
+      const friendly = msg.toLowerCase().includes("already been registered")
+        ? "This email is already registered. Please sign in instead."
+        : msg;
       return new Response(
-        JSON.stringify({ error: createErr.message || "Failed to create user" } satisfies JsonResp),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({ success: false, error: friendly } satisfies JsonResp),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    userId = created!.user!.id;
+    const userId = created.user.id;
 
     // Generate unique ID via RPC
     const { data: uniqueId, error: uidErr } = await supabase.rpc("generate_unique_id", { role_type: role });
     if (uidErr || !uniqueId) {
       return new Response(
-        JSON.stringify({ error: "Failed to generate unique ID", detail: uidErr?.message } satisfies JsonResp),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({ success: false, error: "Failed to generate unique ID", detail: uidErr?.message } satisfies JsonResp),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    // Create profile (idempotent-ish: ignore duplicate aadhar/unique constraint violations)
+    // Create profile
     const { error: profileErr } = await supabase.from("profiles").insert({
       user_id: userId,
       unique_id: uniqueId,
@@ -131,7 +127,7 @@ serve(async (req) => {
     });
 
     if (profileErr) {
-      // If the user already has a profile, don't fail hard – fetch and return existing unique_id
+      // If unique or aadhar already exists, return existing profile unique_id when possible
       if (profileErr.code === "23505") {
         const { data: prof } = await supabase
           .from("profiles")
@@ -144,12 +140,12 @@ serve(async (req) => {
         );
       }
       return new Response(
-        JSON.stringify({ error: profileErr.message || "Failed to create profile" } satisfies JsonResp),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({ success: false, error: profileErr.message || "Failed to create profile" } satisfies JsonResp),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    // Role-specific inserts
+    // Role-specific inserts (best-effort)
     if (role === "patient" && patientDetails) {
       const { error } = await supabase.from("patient_details").insert({
         user_id: userId,
@@ -157,8 +153,8 @@ serve(async (req) => {
       });
       if (error && error.code !== "23505") {
         return new Response(
-          JSON.stringify({ error: error.message || "Failed to save patient details" } satisfies JsonResp),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          JSON.stringify({ success: false, error: error.message || "Failed to save patient details" } satisfies JsonResp),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
     }
@@ -170,8 +166,8 @@ serve(async (req) => {
       });
       if (error && error.code !== "23505") {
         return new Response(
-          JSON.stringify({ error: error.message || "Failed to save doctor verification" } satisfies JsonResp),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          JSON.stringify({ success: false, error: error.message || "Failed to save doctor verification" } satisfies JsonResp),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
     }
@@ -183,8 +179,8 @@ serve(async (req) => {
   } catch (e) {
     console.error("register function error", e);
     return new Response(
-      JSON.stringify({ error: e?.message || "Unknown error" } satisfies JsonResp),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({ success: false, error: (e as any)?.message || "Unknown error" } satisfies JsonResp),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });

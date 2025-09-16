@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Dashboard } from '@/components/Dashboard';
+import { CollapsibleDashboard } from '@/components/CollapsibleDashboard';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
@@ -127,7 +127,7 @@ const DashboardPage = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-background"
     >
-      <Dashboard 
+      <CollapsibleDashboard 
         userType={profile.role} 
         onLogout={handleLogout}
         userProfile={profile}

@@ -6,74 +6,74 @@
 
 @layer base {
   :root {
-    /* Base colors - Clean medical whites with warmth */
-    --background: 45 15% 98%;
-    --foreground: 20 20% 15%;
+    /* Base colors - Darker, more elegant background */
+    --background: 20 25% 6%;
+    --foreground: 45 15% 92%;
 
-    /* Card system - Subtle warmth for medical comfort */
-    --card: 0 0% 100%;
-    --card-foreground: 20 20% 15%;
+    /* Card system - Rich dark cards with subtle warmth */
+    --card: 20 20% 10%;
+    --card-foreground: 45 15% 92%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 20% 15%;
+    --popover: 20 20% 10%;
+    --popover-foreground: 45 15% 92%;
 
-    /* Primary - Ayurvedic forest green for healing */
-    --primary: 140 60% 25%;
+    /* Primary - Deep forest green with elegance */
+    --primary: 140 55% 35%;
     --primary-foreground: 0 0% 98%;
-    --primary-light: 140 40% 45%;
-    --primary-glow: 140 70% 60%;
+    --primary-light: 140 45% 50%;
+    --primary-glow: 140 65% 65%;
 
-    /* Secondary - Sacred saffron for traditional touch */
-    --secondary: 45 85% 75%;
-    --secondary-foreground: 20 20% 15%;
-    --secondary-deep: 35 90% 55%;
+    /* Secondary - Rich gold for luxury */
+    --secondary: 45 75% 25%;
+    --secondary-foreground: 45 15% 92%;
+    --secondary-deep: 35 85% 45%;
 
-    /* Muted - Soft sage for backgrounds */
-    --muted: 120 15% 92%;
-    --muted-foreground: 20 15% 45%;
+    /* Muted - Deep sage for sophisticated backgrounds */
+    --muted: 20 15% 15%;
+    --muted-foreground: 45 10% 65%;
 
-    /* Accent - Therapeutic gold */
-    --accent: 42 78% 60%;
-    --accent-foreground: 20 20% 15%;
+    /* Accent - Warm therapeutic amber */
+    --accent: 42 70% 50%;
+    --accent-foreground: 20 25% 6%;
 
-    /* Medical status colors */
-    --success: 140 70% 45%;
+    /* Medical status colors - Elegant variants */
+    --success: 140 60% 50%;
     --success-foreground: 0 0% 98%;
-    --warning: 45 95% 55%;
-    --warning-foreground: 20 20% 15%;
-    --destructive: 0 70% 55%;
+    --warning: 45 85% 60%;
+    --warning-foreground: 20 25% 6%;
+    --destructive: 0 65% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    /* Interactive elements */
-    --border: 120 20% 85%;
-    --input: 120 15% 92%;
-    --ring: 140 60% 25%;
+    /* Interactive elements - Refined borders */
+    --border: 20 15% 25%;
+    --input: 20 15% 18%;
+    --ring: 140 55% 35%;
 
-    /* Enhanced Earth Tones - Warm Ayurvedic palette */
-    --earth-50: 35 50% 96%;
-    --earth-100: 35 45% 90%;
-    --earth-200: 35 40% 80%;
-    --earth-300: 35 35% 70%;
-    --earth-400: 35 30% 60%;
+    /* Enhanced Earth Tones - Deeper, more elegant */
+    --earth-50: 35 40% 8%;
+    --earth-100: 35 35% 12%;
+    --earth-200: 35 30% 18%;
+    --earth-300: 35 25% 25%;
+    --earth-400: 35 30% 35%;
     --earth-500: 35 35% 45%;
-    --earth-600: 35 40% 35%;
-    --earth-700: 35 45% 25%;
-    --earth-800: 35 50% 18%;
-    --earth-900: 35 55% 12%;
+    --earth-600: 35 40% 55%;
+    --earth-700: 35 45% 65%;
+    --earth-800: 35 50% 75%;
+    --earth-900: 35 55% 85%;
 
-    /* Sage Color System - Calming therapeutic greens */
-    --sage-50: 120 25% 96%;
-    --sage-100: 120 20% 90%;
-    --sage-200: 120 18% 82%;
-    --sage-300: 120 16% 70%;
-    --sage-400: 120 14% 58%;
-    --sage-500: 120 15% 45%;
-    --sage-600: 120 18% 35%;
-    --sage-700: 120 22% 25%;
-    --sage-800: 120 26% 18%;
-    --sage-900: 120 30% 12%;
+    /* Sage Color System - Deep therapeutic greens */
+    --sage-50: 120 20% 8%;
+    --sage-100: 120 18% 12%;
+    --sage-200: 120 16% 18%;
+    --sage-300: 120 14% 25%;
+    --sage-400: 120 16% 35%;
+    --sage-500: 120 18% 45%;
+    --sage-600: 120 20% 55%;
+    --sage-700: 120 22% 65%;
+    --sage-800: 120 24% 75%;
+    --sage-900: 120 26% 85%;
 
-    /* Ayurvedic gradients - Nature-inspired healing themes */
+    /* Elegant gradients - Rich, sophisticated themes */
     --gradient-healing: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-sunrise: linear-gradient(45deg, hsl(var(--secondary)), hsl(var(--accent)));
     --gradient-forest: linear-gradient(180deg, hsl(var(--primary-light)), hsl(var(--primary)));
@@ -81,13 +81,15 @@
     --gradient-earth: linear-gradient(135deg, hsl(var(--earth-200)), hsl(var(--earth-300)));
     --gradient-sage: linear-gradient(180deg, hsl(var(--sage-100)), hsl(var(--sage-200)));
     --gradient-warm: linear-gradient(45deg, hsl(var(--earth-300)), hsl(var(--secondary)));
+    --gradient-elegant: linear-gradient(135deg, hsl(20 25% 8%), hsl(20 20% 12%));
 
-    /* Medical shadows with healing energy */
-    --shadow-gentle: 0 4px 20px -4px hsl(var(--primary) / 0.1);
-    --shadow-elevated: 0 10px 40px -10px hsl(var(--primary) / 0.2);
-    --shadow-glow: 0 0 30px hsl(var(--primary-glow) / 0.3);
-    --shadow-warm: 0 8px 32px -8px hsl(var(--earth-500) / 0.15);
-    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+    /* Enhanced shadows with elegant depth */
+    --shadow-gentle: 0 4px 20px -4px hsl(var(--primary) / 0.2);
+    --shadow-elevated: 0 10px 40px -10px hsl(var(--primary) / 0.3);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
+    --shadow-warm: 0 8px 32px -8px hsl(var(--earth-500) / 0.25);
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
+    --shadow-elegant: 0 20px 60px -10px hsl(0 0% 0% / 0.4);
 
     /* Enhanced animations */
     --transition-healing: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
@@ -96,69 +98,61 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    /* Sidebar - Elegant dark theme */
+    --sidebar-background: 20 25% 6%;
+    --sidebar-foreground: 45 15% 92%;
+    --sidebar-primary: 140 55% 35%;
     --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 20 15% 15%;
+    --sidebar-accent-foreground: 45 15% 92%;
+    --sidebar-border: 20 15% 25%;
+    --sidebar-ring: 140 55% 35%;
   }
 
-  .dark {
-    /* Dark mode - Peaceful night with subtle warmth */
-    --background: 20 25% 8%;
-    --foreground: 45 15% 92%;
+  .light {
+    /* Light mode - Clean medical whites with warmth */
+    --background: 45 15% 98%;
+    --foreground: 20 20% 15%;
 
-    --card: 20 20% 12%;
-    --card-foreground: 45 15% 92%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 20% 15%;
 
-    --popover: 20 20% 12%;
-    --popover-foreground: 45 15% 92%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 20% 15%;
 
-    /* Primary - Luminous healing green */
-    --primary: 140 50% 60%;
-    --primary-foreground: 20 25% 8%;
-    --primary-light: 140 40% 70%;
-    --primary-glow: 140 60% 75%;
+    --primary: 140 60% 25%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 140 40% 45%;
+    --primary-glow: 140 70% 60%;
 
-    /* Secondary - Warm amber for comfort */
-    --secondary: 45 60% 45%;
-    --secondary-foreground: 20 25% 8%;
-    --secondary-deep: 35 70% 55%;
+    --secondary: 45 85% 75%;
+    --secondary-foreground: 20 20% 15%;
+    --secondary-deep: 35 90% 55%;
 
-    --muted: 20 15% 18%;
-    --muted-foreground: 45 10% 65%;
+    --muted: 120 15% 92%;
+    --muted-foreground: 20 15% 45%;
 
-    --accent: 42 60% 55%;
-    --accent-foreground: 20 25% 8%;
+    --accent: 42 78% 60%;
+    --accent-foreground: 20 20% 15%;
 
-    /* Medical status - Enhanced for dark */
-    --success: 140 60% 55%;
-    --success-foreground: 20 25% 8%;
-    --warning: 45 85% 65%;
-    --warning-foreground: 20 25% 8%;
-    --destructive: 0 60% 65%;
-    --destructive-foreground: 20 25% 8%;
+    --success: 140 70% 45%;
+    --success-foreground: 0 0% 98%;
+    --warning: 45 95% 55%;
+    --warning-foreground: 20 20% 15%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 20 15% 25%;
-    --input: 20 15% 18%;
-    --ring: 140 50% 60%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --border: 120 20% 85%;
+    --input: 120 15% 92%;
+    --ring: 140 60% 25%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }

@@ -237,17 +237,17 @@ export const ScientificProgressDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Wellness Score Overview */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+      <Card className="bg-gradient-to-r from-primary/10 to-primary-light/10 border-primary/20 relative z-10">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-blue-600" />
+            <Target className="h-5 w-5 text-primary" />
             {t('progress.wellnessScore')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-6">
             <div className="flex-1">
-              <div className="text-4xl font-bold text-blue-600 mb-2">{wellnessScore}%</div>
+              <div className="text-4xl font-bold text-primary mb-2">{wellnessScore}%</div>
               <Progress value={wellnessScore} className="h-3 mb-2" />
               <p className="text-sm text-muted-foreground">
                 Based on mood, energy, pain levels, and sleep quality

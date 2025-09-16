@@ -82,8 +82,7 @@ const AppSidebar = ({
   const getNavItems = (userType: string) => {
     const commonItems = [
       { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-      { id: 'notifications', label: t('nav.notifications'), icon: Bell },
-      { id: 'settings', label: t('nav.settings'), icon: Settings }
+      { id: 'notifications', label: t('nav.notifications'), icon: Bell }
     ];
 
     const userSpecificItems = {
@@ -107,7 +106,7 @@ const AppSidebar = ({
     return [
       ...commonItems.slice(0, 1), // Dashboard first
       ...(userSpecificItems[userType as keyof typeof userSpecificItems] || []),
-      ...commonItems.slice(1) // Notifications and Settings last
+      ...commonItems.slice(1) // Notifications last
     ];
   };
 
@@ -225,14 +224,6 @@ export const CollapsibleDashboard = ({ userType, onLogout, userProfile }: Collap
       
       case 'notifications':
         return <EnhancedNotificationCenter onMarkAsRead={() => {}} />;
-      
-      case 'settings':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Settings</h2>
-            <p>Settings panel coming soon...</p>
-          </div>
-        );
       
       default:
         return <PatientDashboard />;

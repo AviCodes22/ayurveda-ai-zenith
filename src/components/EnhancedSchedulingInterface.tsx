@@ -6,6 +6,7 @@ import { Calendar, Clock, Sparkles, Brain, CheckCircle, AlertCircle, Loader2 } f
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -370,53 +371,55 @@ export const EnhancedSchedulingInterface = () => {
               {t('schedule.title')}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4 mb-4">
-              <div>
-                <label className="text-sm font-medium">Select Date</label>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleAIOptimization}
-                  disabled={isOptimizing || selectedTherapies.length === 0}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                >
-                  {isOptimizing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Optimizing...
-                    </>
-                  ) : (
-                    <>
-                      <Brain className="h-4 w-4 mr-2" />
-                      {t('schedule.aiOptimize')}
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={handleBookAppointments}
-                  disabled={schedule.size === 0}
-                  variant="default"
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  {t('schedule.bookAppointment')}
-                </Button>
-              </div>
+        <CardContent className="space-y-6">
+          {/* Appointment Selection */}
+          <div className="space-y-2">
+            <Label className="text-base font-semibold">Select Date</Label>
+            <div className="relative z-20">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-3 border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+              />
             </div>
-            
-            {selectedTherapies.length > 0 && (
-              <div className="text-sm text-muted-foreground">
-                Selected: {selectedTherapies.length} therapies
-              </div>
-            )}
-          </CardContent>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={handleAIOptimization}
+              disabled={isOptimizing || selectedTherapies.length === 0}
+              className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary"
+            >
+              {isOptimizing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Optimizing...
+                </>
+              ) : (
+                <>
+                  <Brain className="h-4 w-4 mr-2" />
+                  {t('schedule.aiOptimize')}
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={handleBookAppointments}
+              disabled={schedule.size === 0}
+              variant="default"
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              {t('schedule.bookAppointment')}
+            </Button>
+          </div>
+          
+          {selectedTherapies.length > 0 && (
+            <div className="text-sm text-muted-foreground">
+              Selected: {selectedTherapies.length} therapies
+            </div>
+          )}
+        </CardContent>
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

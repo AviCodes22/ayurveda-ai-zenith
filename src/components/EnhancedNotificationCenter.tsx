@@ -364,7 +364,7 @@ export const EnhancedNotificationCenter = ({ onMarkAsRead }: NotificationCenterP
                                     <MoreVertical className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
+                                <DropdownMenuContent align="end" className="bg-card border-border text-foreground relative z-50">
                                   {!notification.read && (
                                     <DropdownMenuItem onClick={() => markAsRead(notification.id)}>
                                       <Check className="h-4 w-4 mr-2" />

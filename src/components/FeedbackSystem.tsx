@@ -212,12 +212,12 @@ export const FeedbackSystem = () => {
           <div>
             <Label>Select Completed Appointment</Label>
             <Select value={selectedAppointment} onValueChange={setSelectedAppointment}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full bg-card border-border text-foreground relative z-10">
                 <SelectValue placeholder="Choose an appointment to review" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-card border-border text-foreground relative z-50">
                 {appointments.map((appointment) => (
-                  <SelectItem key={appointment.id} value={appointment.id}>
+                  <SelectItem key={appointment.id} value={appointment.id} className="hover:bg-accent">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       <span>

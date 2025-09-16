@@ -19,7 +19,6 @@ import { PatientDashboard } from "@/components/PatientDashboard";
 import { PractitionerDashboard } from "@/components/PractitionerDashboard";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { SchedulingInterface } from "@/components/SchedulingInterface";
-import { TherapyPreview3D } from "@/components/TherapyPreview3D";
 import { NotificationCenter } from "@/components/NotificationCenter";
 
 interface UserProfile {
@@ -193,13 +192,6 @@ export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) =
                 <Card className="card-elevated p-8">
                   <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">Schedule Management</h2>
                   <SchedulingInterface userType={userType} />
-                </Card>
-              )}
-
-              {activeTab === "therapy" && (
-                <Card className="card-elevated p-8">
-                  <h2 className="text-2xl font-playfair font-semibold mb-6 text-foreground">3D Therapy Preview</h2>
-                  <TherapyPreview3D />
                 </Card>
               )}
 

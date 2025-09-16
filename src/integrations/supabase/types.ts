@@ -143,6 +143,90 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          appointment_id: string
+          comments: string | null
+          created_at: string
+          energy_level: number | null
+          id: string
+          overall_wellness: number | null
+          pain_level_after: number | null
+          pain_level_before: number | null
+          patient_id: string
+          rating: number
+          sleep_quality: number | null
+          therapy_id: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id: string
+          comments?: string | null
+          created_at?: string
+          energy_level?: number | null
+          id?: string
+          overall_wellness?: number | null
+          pain_level_after?: number | null
+          pain_level_before?: number | null
+          patient_id: string
+          rating: number
+          sleep_quality?: number | null
+          therapy_id: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          comments?: string | null
+          created_at?: string
+          energy_level?: number | null
+          id?: string
+          overall_wellness?: number | null
+          pain_level_after?: number | null
+          pain_level_before?: number | null
+          patient_id?: string
+          rating?: number
+          sleep_quality?: number | null
+          therapy_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          appointment_reminders: boolean | null
+          created_at: string
+          id: string
+          payment_alerts: boolean | null
+          system_notifications: boolean | null
+          therapy_updates: boolean | null
+          updated_at: string
+          user_id: string
+          wellness_reports: boolean | null
+        }
+        Insert: {
+          appointment_reminders?: boolean | null
+          created_at?: string
+          id?: string
+          payment_alerts?: boolean | null
+          system_notifications?: boolean | null
+          therapy_updates?: boolean | null
+          updated_at?: string
+          user_id: string
+          wellness_reports?: boolean | null
+        }
+        Update: {
+          appointment_reminders?: boolean | null
+          created_at?: string
+          id?: string
+          payment_alerts?: boolean | null
+          system_notifications?: boolean | null
+          therapy_updates?: boolean | null
+          updated_at?: string
+          user_id?: string
+          wellness_reports?: boolean | null
+        }
+        Relationships: []
+      }
       patient_details: {
         Row: {
           allergies: string | null
@@ -245,6 +329,7 @@ export type Database = {
           date_of_birth: string
           full_name: string
           id: string
+          language_preference: string | null
           role: Database["public"]["Enums"]["app_role"]
           unique_id: string
           updated_at: string | null
@@ -256,6 +341,7 @@ export type Database = {
           date_of_birth: string
           full_name: string
           id?: string
+          language_preference?: string | null
           role: Database["public"]["Enums"]["app_role"]
           unique_id: string
           updated_at?: string | null
@@ -267,6 +353,7 @@ export type Database = {
           date_of_birth?: string
           full_name?: string
           id?: string
+          language_preference?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           unique_id?: string
           updated_at?: string | null
@@ -334,6 +421,54 @@ export type Database = {
           id?: string
           is_available?: boolean
           start_time?: string
+        }
+        Relationships: []
+      }
+      wellness_tracking: {
+        Row: {
+          blood_pressure_diastolic: number | null
+          blood_pressure_systolic: number | null
+          created_at: string
+          date: string
+          energy_score: number | null
+          heart_rate: number | null
+          id: string
+          mood_score: number | null
+          pain_score: number | null
+          patient_id: string
+          sleep_hours: number | null
+          updated_at: string
+          weight: number | null
+        }
+        Insert: {
+          blood_pressure_diastolic?: number | null
+          blood_pressure_systolic?: number | null
+          created_at?: string
+          date?: string
+          energy_score?: number | null
+          heart_rate?: number | null
+          id?: string
+          mood_score?: number | null
+          pain_score?: number | null
+          patient_id: string
+          sleep_hours?: number | null
+          updated_at?: string
+          weight?: number | null
+        }
+        Update: {
+          blood_pressure_diastolic?: number | null
+          blood_pressure_systolic?: number | null
+          created_at?: string
+          date?: string
+          energy_score?: number | null
+          heart_rate?: number | null
+          id?: string
+          mood_score?: number | null
+          pain_score?: number | null
+          patient_id?: string
+          sleep_hours?: number | null
+          updated_at?: string
+          weight?: number | null
         }
         Relationships: []
       }

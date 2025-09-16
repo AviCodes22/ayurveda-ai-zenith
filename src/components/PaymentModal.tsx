@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  appointment: {
+  appointment?: {
     id: string;
     therapy: string;
     date: string;
@@ -29,6 +29,11 @@ declare global {
 
 export const PaymentModal = ({ isOpen, onClose, appointment, onSuccess }: PaymentModalProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Don't render if appointment data is not available
+  if (!appointment) {
+    return null;
+  }
 
   const initializeRazorpay = () => {
     return new Promise((resolve) => {

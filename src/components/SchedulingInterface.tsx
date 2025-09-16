@@ -76,50 +76,70 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
   }, [user]);
 
   const fetchTherapies = async () => {
-    const { data, error } = await supabase
-      .from('therapies')
-      .select('*')
-      .order('name');
-    
-    if (error) {
-      console.error('Error fetching therapies:', error);
+    try {
+      const { data, error } = await supabase
+        .from('therapies')
+        .select('*')
+        .order('name');
+      
+      if (error) {
+        console.error('Error fetching therapies:', error);
+        toast.error('Failed to load therapies');
+      } else {
+        console.log('Fetched therapies:', data);
+        setTherapies(data || []);
+      }
+    } catch (error) {
+      console.error('Unexpected error fetching therapies:', error);
       toast.error('Failed to load therapies');
-    } else {
-      setTherapies(data || []);
     }
   };
 
   const fetchTimeSlots = async () => {
-    const { data, error } = await supabase
-      .from('time_slots')
-      .select('*')
-      .eq('is_available', true)
-      .order('start_time');
-    
-    if (error) {
-      console.error('Error fetching time slots:', error);
-    } else {
-      setTimeSlots(data || []);
+    try {
+      const { data, error } = await supabase
+        .from('time_slots')
+        .select('*')
+        .eq('is_available', true)
+        .order('start_time');
+      
+      if (error) {
+        console.error('Error fetching time slots:', error);
+        toast.error('Failed to load time slots');
+      } else {
+        console.log('Fetched time slots:', data);
+        setTimeSlots(data || []);
+      }
+    } catch (error) {
+      console.error('Unexpected error fetching time slots:', error);
+      toast.error('Failed to load time slots');
     }
   };
 
   const fetchAppointments = async () => {
     if (!user) return;
     
-    const { data, error } = await supabase
-      .from('appointments')
-      .select(`
-        *,
-        therapies(name),
-        time_slots(start_time, end_time)
-      `)
-      .eq('patient_id', user.id)
-      .order('appointment_date', { ascending: true });
-    
-    if (error) {
-      console.error('Error fetching appointments:', error);
-    } else {
-      setAppointments(data || []);
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          *,
+          therapies(name),
+          time_slots(start_time, end_time)
+        `)
+        .eq('patient_id', user.id)
+        .order('appointment_date', { ascending: true });
+      
+      if (error) {
+        console.error('Error fetching appointments:', error);
+        toast.error('Failed to load appointments');
+      } else {
+        console.log('Fetched appointments:', data);
+        setAppointments(data || []);
+      }
+    } catch (error) {
+      console.error('Unexpected error fetching appointments:', error);
+      toast.error('Failed to load appointments');
     }
   };
 
@@ -415,12 +435,14 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
       </Card>
 
       {/* Payment Modal */}
-      <PaymentModal
-        isOpen={paymentModal.isOpen}
-        onClose={() => setPaymentModal({ isOpen: false })}
-        appointment={paymentModal.appointment!}
-        onSuccess={handlePaymentSuccess}
-      />
+      {paymentModal.appointment && (
+        <PaymentModal
+          isOpen={paymentModal.isOpen}
+          onClose={() => setPaymentModal({ isOpen: false })}
+          appointment={paymentModal.appointment}
+          onSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 };

@@ -199,8 +199,9 @@ export type Database = {
           currency: string
           id: string
           payment_method: string | null
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
           status: string
-          stripe_payment_intent_id: string | null
           updated_at: string
         }
         Insert: {
@@ -210,8 +211,9 @@ export type Database = {
           currency?: string
           id?: string
           payment_method?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
           status?: string
-          stripe_payment_intent_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -221,8 +223,9 @@ export type Database = {
           currency?: string
           id?: string
           payment_method?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
           status?: string
-          stripe_payment_intent_id?: string | null
           updated_at?: string
         }
         Relationships: [

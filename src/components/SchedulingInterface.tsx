@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,74 +16,168 @@ import {
   Users, 
   MapPin,
   Sparkles,
-  CheckCircle
+  CheckCircle,
+  CreditCard
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { PaymentModal } from "@/components/PaymentModal";
 
 interface SchedulingInterfaceProps {
   userType: string;
 }
 
-const therapyTypes = [
-  { id: "panchakarma", name: "Panchakarma Detox", duration: "90 min", color: "bg-primary" },
-  { id: "abhyanga", name: "Abhyanga Massage", duration: "60 min", color: "bg-secondary-deep" },
-  { id: "shirodhara", name: "Shirodhara Therapy", duration: "45 min", color: "bg-accent" },
-  { id: "basti", name: "Basti Treatment", duration: "75 min", color: "bg-success" },
-  { id: "nasya", name: "Nasya Therapy", duration: "30 min", color: "bg-warning" },
-];
+interface Therapy {
+  id: string;
+  name: string;
+  description: string;
+  duration_minutes: number;
+  price: number;
+  category: string;
+  benefits: string[];
+  image_url: string;
+}
 
-const timeSlots = [
-  "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
-  "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
-];
-
-const mockAppointments = [
-  {
-    date: new Date(2024, 11, 15),
-    time: "10:00 AM",
-    therapy: "Panchakarma Detox",
-    patient: "Priya Sharma",
-    practitioner: "Dr. Ayush Patel"
-  },
-  {
-    date: new Date(2024, 11, 16),
-    time: "02:00 PM", 
-    therapy: "Abhyanga Massage",
-    patient: "Raj Kumar",
-    practitioner: "Dr. Sunita Sharma"
-  },
-];
+interface TimeSlot {
+  id: string;
+  start_time: string;
+  end_time: string;
+  is_available: boolean;
+}
 
 export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
+  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedTherapy, setSelectedTherapy] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [appointments, setAppointments] = useState(mockAppointments);
   const [optimizing, setOptimizing] = useState(false);
+  const [therapies, setTherapies] = useState<Therapy[]>([]);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [paymentModal, setPaymentModal] = useState<{
+    isOpen: boolean;
+    appointment?: {
+      id: string;
+      therapy: string;
+      date: string;
+      time: string;
+      amount: number;
+    };
+  }>({ isOpen: false });
 
-  const handleSchedule = () => {
-    if (!selectedDate || !selectedTherapy || !selectedTime) {
+  useEffect(() => {
+    fetchTherapies();
+    fetchTimeSlots();
+    if (user) {
+      fetchAppointments();
+    }
+  }, [user]);
+
+  const fetchTherapies = async () => {
+    const { data, error } = await supabase
+      .from('therapies')
+      .select('*')
+      .order('name');
+    
+    if (error) {
+      console.error('Error fetching therapies:', error);
+      toast.error('Failed to load therapies');
+    } else {
+      setTherapies(data || []);
+    }
+  };
+
+  const fetchTimeSlots = async () => {
+    const { data, error } = await supabase
+      .from('time_slots')
+      .select('*')
+      .eq('is_available', true)
+      .order('start_time');
+    
+    if (error) {
+      console.error('Error fetching time slots:', error);
+    } else {
+      setTimeSlots(data || []);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        therapies(name),
+        time_slots(start_time, end_time)
+      `)
+      .eq('patient_id', user.id)
+      .order('appointment_date', { ascending: true });
+    
+    if (error) {
+      console.error('Error fetching appointments:', error);
+    } else {
+      setAppointments(data || []);
+    }
+  };
+
+  const handleSchedule = async () => {
+    if (!selectedDate || !selectedTherapy || !selectedTime || !user) {
       toast.error("Please fill in all required fields");
       return;
     }
 
-    const newAppointment = {
-      date: selectedDate,
-      time: selectedTime,
-      therapy: therapyTypes.find(t => t.id === selectedTherapy)?.name || "",
-      patient: userType === "patient" ? "You" : "New Patient",
-      practitioner: userType === "practitioner" ? "You" : "Auto-assigned"
-    };
+    try {
+      const selectedTherapyData = therapies.find(t => t.id === selectedTherapy);
+      const selectedTimeSlotData = timeSlots.find(t => t.id === selectedTime);
+      
+      if (!selectedTherapyData || !selectedTimeSlotData) {
+        toast.error("Invalid therapy or time slot selected");
+        return;
+      }
 
-    setAppointments([...appointments, newAppointment]);
-    setIsDialogOpen(false);
-    setSelectedTherapy("");
-    setSelectedTime("");
-    
-    toast.success("Appointment scheduled successfully!", {
-      description: `${newAppointment.therapy} on ${selectedDate.toLocaleDateString()} at ${selectedTime}`
-    });
+      // Create appointment
+      const { data: appointment, error } = await supabase
+        .from('appointments')
+        .insert({
+          patient_id: user.id,
+          therapy_id: selectedTherapy,
+          time_slot_id: selectedTime,
+          appointment_date: selectedDate.toISOString().split('T')[0],
+          total_amount: selectedTherapyData.price,
+          status: 'scheduled',
+          payment_status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating appointment:', error);
+        toast.error('Failed to create appointment');
+        return;
+      }
+
+      // Open payment modal
+      setPaymentModal({
+        isOpen: true,
+        appointment: {
+          id: appointment.id,
+          therapy: selectedTherapyData.name,
+          date: selectedDate.toLocaleDateString(),
+          time: `${selectedTimeSlotData.start_time} - ${selectedTimeSlotData.end_time}`,
+          amount: selectedTherapyData.price
+        }
+      });
+
+      setIsDialogOpen(false);
+      setSelectedTherapy("");
+      setSelectedTime("");
+    } catch (error) {
+      console.error('Error scheduling appointment:', error);
+      toast.error('Failed to schedule appointment');
+    }
   };
 
   const handleAIOptimize = () => {
@@ -98,8 +192,15 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
 
   const getAppointmentsForDate = (date: Date) => {
     return appointments.filter(apt => 
-      apt.date.toDateString() === date.toDateString()
+      apt.appointment_date === date.toISOString().split('T')[0]
     );
+  };
+
+  const handlePaymentSuccess = () => {
+    fetchAppointments();
+    toast.success('Appointment confirmed!', {
+      description: 'Payment completed successfully.'
+    });
   };
 
   return (
@@ -147,11 +248,11 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
                       <SelectValue placeholder="Choose therapy" />
                     </SelectTrigger>
                     <SelectContent>
-                      {therapyTypes.map((therapy) => (
+                      {therapies.map((therapy) => (
                         <SelectItem key={therapy.id} value={therapy.id}>
-                          <div className="flex items-center gap-2">
-                            <div className={`w-3 h-3 rounded-full ${therapy.color}`} />
-                            {therapy.name} ({therapy.duration})
+                          <div className="flex items-center justify-between w-full">
+                            <span>{therapy.name} ({therapy.duration_minutes} min)</span>
+                            <Badge variant="secondary">₹{therapy.price}</Badge>
                           </div>
                         </SelectItem>
                       ))}
@@ -166,11 +267,11 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
                       <SelectValue placeholder="Choose time" />
                     </SelectTrigger>
                     <SelectContent>
-                      {timeSlots.map((time) => (
-                        <SelectItem key={time} value={time}>
+                      {timeSlots.map((slot) => (
+                        <SelectItem key={slot.id} value={slot.id}>
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4" />
-                            {time}
+                            {slot.start_time} - {slot.end_time}
                           </div>
                         </SelectItem>
                       ))}
@@ -192,8 +293,8 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
                 )}
 
                 <Button onClick={handleSchedule} className="w-full">
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Confirm Booking
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Book & Pay
                 </Button>
               </div>
             </DialogContent>
@@ -218,16 +319,16 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
               selected={selectedDate}
               onSelect={setSelectedDate}
               className="rounded-md border"
-              modifiers={{
-                hasAppointment: appointments.map(apt => apt.date)
-              }}
-              modifiersStyles={{
-                hasAppointment: { 
-                  backgroundColor: "hsl(var(--primary))", 
-                  color: "white",
-                  fontWeight: "bold"
-                }
-              }}
+            modifiers={{
+              hasAppointment: appointments.map(apt => new Date(apt.appointment_date))
+            }}
+            modifiersStyles={{
+              hasAppointment: { 
+                backgroundColor: "hsl(var(--primary))", 
+                color: "white",
+                fontWeight: "bold"
+              }
+            }}
             />
           </div>
         </Card>
@@ -247,18 +348,28 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
               ) : (
                 getAppointmentsForDate(selectedDate).map((apt, index) => (
                   <motion.div
-                    key={index}
+                    key={apt.id}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     className="p-3 border rounded-lg hover:shadow-sm transition-shadow"
                   >
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-primary" />
-                      <span className="font-medium">{apt.time}</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-primary" />
+                        <span className="font-medium">
+                          {apt.time_slots?.start_time} - {apt.time_slots?.end_time}
+                        </span>
+                      </div>
+                      <Badge 
+                        variant={apt.payment_status === 'completed' ? 'default' : 'secondary'}
+                        className={apt.payment_status === 'completed' ? 'bg-green-100 text-green-800' : ''}
+                      >
+                        {apt.payment_status === 'completed' ? 'Paid' : 'Pending'}
+                      </Badge>
                     </div>
-                    <h4 className="font-medium text-sm">{apt.therapy}</h4>
+                    <h4 className="font-medium text-sm">{apt.therapies?.name}</h4>
                     <p className="text-xs text-muted-foreground">
-                      {userType === "patient" ? `Dr. ${apt.practitioner}` : apt.patient}
+                      ₹{apt.total_amount} • {apt.status}
                     </p>
                   </motion.div>
                 ))
@@ -271,23 +382,45 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
       {/* Therapy Options */}
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Available Therapies</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {therapyTypes.map((therapy) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {therapies.map((therapy) => (
             <motion.div
               key={therapy.id}
               whileHover={{ scale: 1.02 }}
-              className="p-4 border rounded-lg text-center hover:shadow-md transition-all cursor-pointer"
+              className="p-4 border rounded-lg hover:shadow-md transition-all cursor-pointer"
               onClick={() => setSelectedTherapy(therapy.id)}
             >
-              <div className={`w-12 h-12 ${therapy.color} rounded-full mx-auto mb-3 flex items-center justify-center`}>
-                <div className="w-6 h-6 bg-white rounded-full" />
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium text-sm">{therapy.name}</h4>
+                <Badge variant="outline">₹{therapy.price}</Badge>
               </div>
-              <h4 className="font-medium text-sm mb-1">{therapy.name}</h4>
-              <p className="text-xs text-muted-foreground">{therapy.duration}</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                {therapy.duration_minutes} minutes • {therapy.category}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {therapy.description?.substring(0, 80)}...
+              </p>
+              {therapy.benefits && therapy.benefits.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {therapy.benefits.slice(0, 2).map((benefit, idx) => (
+                    <Badge key={idx} variant="secondary" className="text-xs">
+                      {benefit}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </motion.div>
           ))}
         </div>
       </Card>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={paymentModal.isOpen}
+        onClose={() => setPaymentModal({ isOpen: false })}
+        appointment={paymentModal.appointment!}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };

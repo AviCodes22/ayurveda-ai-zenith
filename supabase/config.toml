@@ -3,5 +3,8 @@ project_id = "hvnmfpbyhymkeojtfxfb"
 [functions.register]
 verify_jwt = false
 
+[functions.delete-user]
+verify_jwt = false
+
 [functions.razorpay-payment]
 verify_jwt = true

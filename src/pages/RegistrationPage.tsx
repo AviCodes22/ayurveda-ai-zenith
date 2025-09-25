@@ -142,6 +142,23 @@ const RegistrationPage = () => {
   // Silent validation for button state (no toasts)
   const isBasicInfoValid = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    // Debug logging to help identify validation issues
+    console.log('Validation Debug:', {
+      fullName: !!basicInfo.fullName,
+      dateOfBirth: !!basicInfo.dateOfBirth,
+      aadharNumber: !!basicInfo.aadharNumber,
+      email: !!basicInfo.email,
+      password: !!basicInfo.password,
+      confirmPassword: !!basicInfo.confirmPassword,
+      passwordsMatch: basicInfo.password === basicInfo.confirmPassword,
+      aadharLength: basicInfo.aadharNumber.length,
+      aadharValid: /^\d{12}$/.test(basicInfo.aadharNumber),
+      emailValid: emailRegex.test(basicInfo.email),
+      passwordLength: basicInfo.password.length,
+      passwordLengthValid: basicInfo.password.length >= 8
+    });
+    
     return !!(
       basicInfo.fullName && 
       basicInfo.dateOfBirth && 
@@ -387,7 +404,11 @@ const RegistrationPage = () => {
             value={basicInfo.dateOfBirth}
             onChange={(e) => setBasicInfo({...basicInfo, dateOfBirth: e.target.value})}
             className="border-primary/20"
+            max={new Date().toISOString().split('T')[0]} // Prevent future dates
           />
+          <p className="text-xs text-muted-foreground">
+            Please use the date picker or enter in YYYY-MM-DD format
+          </p>
         </div>
       </div>
       
@@ -396,11 +417,17 @@ const RegistrationPage = () => {
         <Input
           id="aadharNumber"
           value={basicInfo.aadharNumber}
-          onChange={(e) => setBasicInfo({...basicInfo, aadharNumber: e.target.value})}
+          onChange={(e) => {
+            const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+            setBasicInfo({...basicInfo, aadharNumber: value});
+          }}
           placeholder="Enter 12-digit Aadhar number"
           maxLength={12}
           className="border-primary/20"
         />
+        <p className="text-xs text-muted-foreground">
+          {basicInfo.aadharNumber.length}/12 digits
+        </p>
       </div>
 
       <div className="space-y-2">

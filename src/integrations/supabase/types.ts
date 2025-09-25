@@ -376,7 +376,7 @@ export type Database = {
       therapist_assignments: {
         Row: {
           created_at: string
-          doctor_id: string
+          doctor_id: string | null
           id: string
           is_active: boolean
           specialization: string
@@ -386,7 +386,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          doctor_id: string
+          doctor_id?: string | null
           id?: string
           is_active?: boolean
           specialization: string
@@ -396,7 +396,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          doctor_id?: string
+          doctor_id?: string | null
           id?: string
           is_active?: boolean
           specialization?: string

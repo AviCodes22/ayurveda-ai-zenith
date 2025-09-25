@@ -7,11 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate, Link } from "react-router-dom";
-import { Leaf, Heart, User, UserCheck, Shield, ArrowRight, ArrowLeft } from "lucide-react";
+import { Leaf, Heart, User, UserCheck, Stethoscope, ArrowRight, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
-type UserRole = 'patient' | 'doctor' | 'administrator';
+type UserRole = 'patient' | 'doctor' | 'therapist';
 
 interface BasicInfo {
   fullName: string;
@@ -42,8 +42,8 @@ interface DoctorDetails {
   clinicAddress: string;
 }
 
-interface AdminDetails {
-  workerId: string;
+interface TherapistDetails {
+  therapistId: string;
 }
 
 const RegistrationPage = () => {
@@ -82,8 +82,8 @@ const RegistrationPage = () => {
     clinicAddress: ""
   });
 
-  const [adminDetails, setAdminDetails] = useState<AdminDetails>({
-    workerId: ""
+  const [therapistDetails, setTherapistDetails] = useState<TherapistDetails>({
+    therapistId: ""
   });
 
   const validateBasicInfo = () => {
@@ -96,6 +96,27 @@ const RegistrationPage = () => {
       return false;
     }
 
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(basicInfo.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    // Password length validation
+    if (basicInfo.password.length < 8) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 8 characters long.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
     if (basicInfo.password !== basicInfo.confirmPassword) {
       toast({
         title: "Password Mismatch",
@@ -105,10 +126,11 @@ const RegistrationPage = () => {
       return false;
     }
 
-    if (basicInfo.aadharNumber.length !== 12) {
+    // Aadhar number validation
+    if (basicInfo.aadharNumber.length !== 12 || !/^\d{12}$/.test(basicInfo.aadharNumber)) {
       toast({
         title: "Invalid Aadhar Number",
-        description: "Aadhar number must be 12 digits.",
+        description: "Aadhar number must be exactly 12 digits.",
         variant: "destructive"
       });
       return false;
@@ -119,6 +141,7 @@ const RegistrationPage = () => {
 
   // Silent validation for button state (no toasts)
   const isBasicInfoValid = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return !!(
       basicInfo.fullName && 
       basicInfo.dateOfBirth && 
@@ -126,16 +149,61 @@ const RegistrationPage = () => {
       basicInfo.email && 
       basicInfo.password &&
       basicInfo.password === basicInfo.confirmPassword &&
-      basicInfo.aadharNumber.length === 12
+      basicInfo.aadharNumber.length === 12 &&
+      /^\d{12}$/.test(basicInfo.aadharNumber) &&
+      emailRegex.test(basicInfo.email) &&
+      basicInfo.password.length >= 8
     );
   };
 
   // Validation with user feedback for form submission
-  const validateBasicInfoWithFeedback = () => {
+  const validateBasicInfoWithFeedback = async () => {
+    // Basic field validation
     if (!basicInfo.fullName || !basicInfo.dateOfBirth || !basicInfo.aadharNumber || !basicInfo.email || !basicInfo.password) {
       toast({
         title: "Incomplete Information",
         description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(basicInfo.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    // Check if email already exists (only if we can access admin functions)
+    try {
+      const { data: existingProfiles } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('aadhar_number', basicInfo.aadharNumber);
+
+      if (existingProfiles && existingProfiles.length > 0) {
+        toast({
+          title: "Aadhar Already Registered",
+          description: "This Aadhar number is already registered. Please check your details.",
+          variant: "destructive"
+        });
+        return false;
+      }
+    } catch (error) {
+      // If we can't check, we'll let the server handle duplicates
+      console.log('Could not check for existing Aadhar number:', error);
+    }
+
+    // Password length validation
+    if (basicInfo.password.length < 8) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 8 characters long.",
         variant: "destructive"
       });
       return false;
@@ -150,10 +218,11 @@ const RegistrationPage = () => {
       return false;
     }
 
-    if (basicInfo.aadharNumber.length !== 12) {
+    // Aadhar number validation
+    if (basicInfo.aadharNumber.length !== 12 || !/^\d{12}$/.test(basicInfo.aadharNumber)) {
       toast({
         title: "Invalid Aadhar Number",
-        description: "Aadhar number must be 12 digits.",
+        description: "Aadhar number must be exactly 12 digits.",
         variant: "destructive"
       });
       return false;
@@ -163,7 +232,7 @@ const RegistrationPage = () => {
   };
 
   const handleRegistration = async () => {
-    if ((!role) || (step === 2 && !validateBasicInfoWithFeedback())) return;
+    if ((!role) || (step === 2 && !(await validateBasicInfoWithFeedback()))) return;
     setIsLoading(true);
 
     try {
@@ -196,8 +265,8 @@ const RegistrationPage = () => {
           years_of_experience: doctorDetails.yearsOfExperience ? parseInt(doctorDetails.yearsOfExperience) : null,
           clinic_address: doctorDetails.clinicAddress,
         };
-      } else if (role === 'administrator') {
-        payload.adminDetails = { workerId: adminDetails.workerId };
+      } else if (role === 'therapist') {
+        payload.therapistDetails = { therapistId: therapistDetails.therapistId };
       }
 
       const { data, error } = await supabase.functions.invoke('register', { body: payload });
@@ -271,25 +340,25 @@ const RegistrationPage = () => {
         </div>
       </motion.div>
 
-      {/* Administrator Card */}
+      {/* Therapist Card */}
       <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        onClick={() => setRole('administrator')}
+        onClick={() => setRole('therapist')}
         className={`p-6 rounded-2xl border cursor-pointer transition-all duration-300 ${
-          role === 'administrator' 
+          role === 'therapist' 
             ? 'border-primary bg-primary/5 shadow-glow' 
             : 'border-primary/10 bg-card hover:border-primary/30'
         }`}
       >
         <div className="flex items-center gap-4">
-          <div className={`p-3 rounded-full ${role === 'administrator' ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
-            <Shield className="w-6 h-6" />
+          <div className={`p-3 rounded-full ${role === 'therapist' ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
+            <Stethoscope className="w-6 h-6" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground">Administrator</h3>
+            <h3 className="text-lg font-semibold text-foreground">Therapist</h3>
             <p className="text-sm text-muted-foreground">
-              System administrator managing platform operations and user verification
+              Professional therapist specializing in Panchakarma treatments and wellness
             </p>
           </div>
         </div>
@@ -563,22 +632,22 @@ const RegistrationPage = () => {
       );
     }
 
-    if (role === 'administrator') {
+    if (role === 'therapist') {
       return (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Administrator Verification</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Therapist Assignment</h3>
           
           <div className="space-y-2">
-            <Label htmlFor="workerId">Worker ID *</Label>
+            <Label htmlFor="therapistId">Therapist ID *</Label>
             <Input
-              id="workerId"
-              value={adminDetails.workerId}
-              onChange={(e) => setAdminDetails({...adminDetails, workerId: e.target.value})}
-              placeholder="Enter your administrator worker ID"
+              id="therapistId"
+              value={therapistDetails.therapistId}
+              onChange={(e) => setTherapistDetails({...therapistDetails, therapistId: e.target.value})}
+              placeholder="Enter your assigned therapist ID (e.g., THR001)"
               className="border-primary/20"
             />
             <p className="text-sm text-muted-foreground">
-              Contact your IT administrator if you don't have a valid worker ID.
+              Please contact your supervising doctor to obtain your therapist ID.
             </p>
           </div>
         </div>
@@ -592,7 +661,7 @@ const RegistrationPage = () => {
     switch(step) {
       case 1: return "Select Your Role";
       case 2: return "Basic Information";
-      case 3: return role === 'patient' ? "Health Assessment" : role === 'doctor' ? "Professional Details" : "Verification";
+      case 3: return role === 'patient' ? "Health Assessment" : role === 'doctor' ? "Professional Details" : "Therapist Assignment";
       default: return "Registration";
     }
   };

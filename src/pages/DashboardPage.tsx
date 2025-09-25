@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 interface UserProfile {
   unique_id: string;
   full_name: string;
-  role: 'patient' | 'doctor' | 'administrator';
+  role: 'patient' | 'doctor' | 'therapist';
 }
 
 const DashboardPage = () => {

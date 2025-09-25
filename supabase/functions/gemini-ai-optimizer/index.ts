@@ -166,7 +166,7 @@ Respond with a JSON object containing:
       console.error('Failed to parse AI response:', parseError);
       // Fallback: create basic optimization
       optimizationResult = {
-        optimizedSchedule: selectedTherapies.map((therapyId, index) => ({
+        optimizedSchedule: selectedTherapies.map((therapyId: string, index: number) => ({
           therapyId,
           timeSlotId: availableSlots[index % availableSlots.length]?.id,
           priority: Math.min(index + 1, 5),
@@ -191,7 +191,7 @@ Respond with a JSON object containing:
   } catch (error) {
     console.error('Error in gemini-ai-optimizer function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: (error as Error).message,
       success: false 
     }), {
       status: 500,

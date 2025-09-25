@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { X, User, UserCheck, Shield } from "lucide-react";
+import { X, User, UserCheck, Stethoscope } from "lucide-react";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -26,10 +26,10 @@ export const AuthModal = ({ isOpen, onClose, onLogin }: AuthModalProps) => {
       color: "from-secondary to-accent"
     },
     {
-      type: "admin",
-      title: "Administrator", 
-      description: "System management and analytics",
-      icon: Shield,
+      type: "therapist",
+      title: "Therapist",
+      description: "Specialized therapy sessions and treatments",
+      icon: Stethoscope,
       color: "from-accent to-secondary-deep"
     }
   ];

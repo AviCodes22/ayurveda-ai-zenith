@@ -14,33 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      administrator_workers: {
-        Row: {
-          created_at: string | null
-          department: string
-          id: string
-          is_active: boolean | null
-          position: string
-          worker_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          department: string
-          id?: string
-          is_active?: boolean | null
-          position: string
-          worker_id: string
-        }
-        Update: {
-          created_at?: string | null
-          department?: string
-          id?: string
-          is_active?: boolean | null
-          position?: string
-          worker_id?: string
-        }
-        Relationships: []
-      }
       appointments: {
         Row: {
           appointment_date: string
@@ -342,7 +315,7 @@ export type Database = {
           full_name: string
           id?: string
           language_preference?: string | null
-          role: Database["public"]["Enums"]["app_role"]
+          role?: Database["public"]["Enums"]["app_role"]
           unique_id: string
           updated_at?: string | null
           user_id: string
@@ -396,6 +369,39 @@ export type Database = {
           image_url?: string | null
           name?: string
           price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      therapist_assignments: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          is_active: boolean
+          specialization: string
+          therapist_id: string
+          therapist_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          is_active?: boolean
+          specialization: string
+          therapist_id: string
+          therapist_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          is_active?: boolean
+          specialization?: string
+          therapist_id?: string
+          therapist_name?: string
           updated_at?: string
         }
         Relationships: []
@@ -487,7 +493,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "patient" | "doctor" | "administrator"
+      app_role: "patient" | "doctor" | "therapist"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -615,7 +621,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["patient", "doctor", "administrator"],
+      app_role: ["patient", "doctor", "therapist"],
     },
   },
 } as const

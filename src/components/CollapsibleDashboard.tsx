@@ -44,7 +44,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface UserProfile {
   unique_id: string;
   full_name: string;
-  role: 'patient' | 'doctor' | 'administrator';
+  role: 'patient' | 'doctor' | 'therapist';
 }
 
 interface CollapsibleDashboardProps {
@@ -74,7 +74,7 @@ const AppSidebar = ({
     switch (type) {
       case 'patient': return t('dashboard.patient');
       case 'doctor': return t('dashboard.doctor');
-      case 'administrator': return t('dashboard.admin');
+      case 'therapist': return t('dashboard.therapist');
       default: return 'Dashboard';
     }
   };
@@ -96,10 +96,10 @@ const AppSidebar = ({
         { id: 'schedule', label: 'My Schedule', icon: Calendar },
         { id: 'analytics', label: 'Analytics', icon: Activity }
       ],
-      administrator: [
-        { id: 'users', label: 'User Management', icon: User },
-        { id: 'system', label: 'System Health', icon: Heart },
-        { id: 'reports', label: 'Reports', icon: TrendingUp }
+      therapist: [
+        { id: 'patients', label: 'My Patients', icon: User },
+        { id: 'schedule', label: 'My Schedule', icon: Calendar },
+        { id: 'treatments', label: 'Treatments', icon: Heart }
       ]
     };
 
@@ -210,7 +210,7 @@ export const CollapsibleDashboard = ({ userType, onLogout, userProfile }: Collap
       case 'dashboard':
         if (userType === 'patient') return <PatientDashboard />;
         if (userType === 'doctor') return <PractitionerDashboard />;
-        if (userType === 'administrator') return <AdminDashboard />;
+        if (userType === 'therapist') return <PractitionerDashboard />;
         return <PatientDashboard />;
       
       case 'schedule':

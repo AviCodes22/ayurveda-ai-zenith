@@ -10,7 +10,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-type UserRole = "patient" | "doctor" | "administrator";
+type UserRole = 'patient' | 'doctor' | 'therapist';
 
 type JsonResp = {
   success: boolean;
@@ -50,7 +50,7 @@ serve(async (req) => {
       role,
       patientDetails,
       doctorDetails,
-      adminDetails,
+      therapistDetails,
     }: {
       email: string;
       password: string;
@@ -60,7 +60,7 @@ serve(async (req) => {
       role: UserRole;
       patientDetails?: Record<string, unknown>;
       doctorDetails?: Record<string, unknown>;
-      adminDetails?: { workerId: string };
+      therapistDetails?: { therapistId: string };
     } = body;
 
     // Basic validation
@@ -71,17 +71,17 @@ serve(async (req) => {
       );
     }
 
-    // Verify admin worker ID
-    if (role === "administrator") {
-      const { data: worker, error: workerErr } = await supabase
-        .from("administrator_workers")
-        .select("worker_id, is_active")
-        .eq("worker_id", adminDetails?.workerId ?? "")
+    // Verify therapist ID
+    if (role === "therapist") {
+      const { data: therapist, error: therapistErr } = await supabase
+        .from("therapist_assignments")
+        .select("therapist_id, is_active")
+        .eq("therapist_id", therapistDetails?.therapistId ?? "")
         .maybeSingle();
 
-      if (workerErr || !worker || worker.is_active !== true) {
+      if (therapistErr || !therapist || therapist.is_active !== true) {
         return new Response(
-          JSON.stringify({ success: false, error: "Invalid or inactive administrator worker ID" } satisfies JsonResp),
+          JSON.stringify({ success: false, error: "Invalid or inactive therapist ID" } satisfies JsonResp),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }

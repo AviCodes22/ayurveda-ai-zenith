@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -185,6 +186,7 @@ export const EnhancedSchedulingInterface = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -314,6 +316,7 @@ export const EnhancedSchedulingInterface = () => {
     }
 
     try {
+      // Create pending appointments first
       const appointments = Array.from(schedule.entries()).map(([slotId, therapy]) => ({
         patient_id: user?.id,
         therapy_id: therapy.id,
@@ -324,26 +327,51 @@ export const EnhancedSchedulingInterface = () => {
         payment_status: 'pending'
       }));
 
-      const { error } = await supabase
+      const { data: createdAppointments, error } = await supabase
         .from('appointments')
-        .insert(appointments);
+        .insert(appointments)
+        .select('*');
 
       if (error) throw error;
 
-      toast({
-        title: "Appointments booked successfully!",
-        description: `${appointments.length} therapy sessions scheduled for ${selectedDate}`,
+      // Calculate total amount
+      const totalAmount = Array.from(schedule.values()).reduce((sum, therapy) => sum + therapy.price, 0);
+
+      // Prepare therapy data with time slots for payment page
+      const therapyData = Array.from(schedule.entries()).map(([slotId, therapy]) => {
+        const timeSlot = timeSlots.find(slot => slot.id === slotId);
+        return {
+          id: therapy.id,
+          name: therapy.name,
+          duration_minutes: therapy.duration_minutes,
+          price: therapy.price,
+          timeSlot: timeSlot ? `${timeSlot.start_time} - ${timeSlot.end_time}` : 'Time TBD',
+          date: selectedDate
+        };
+      });
+
+      // Navigate to payment page with appointment data
+      navigate('/payment', {
+        state: {
+          paymentData: {
+            therapies: therapyData,
+            totalAmount,
+            selectedDate
+          },
+          appointments: createdAppointments
+        }
       });
 
       // Reset form
       setSchedule(new Map());
       setSelectedTherapies([]);
       setAiOptimization(null);
+
     } catch (error) {
-      console.error('Error booking appointments:', error);
+      console.error('Error creating appointments:', error);
       toast({
         title: "Booking failed",
-        description: "Failed to book appointments. Please try again.",
+        description: "Failed to create appointments. Please try again.",
         variant: "destructive",
       });
     }
@@ -480,22 +508,22 @@ export const EnhancedSchedulingInterface = () => {
 
         {/* AI Insights */}
         {aiOptimization && (
-          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+          <Card className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-blue-600" />
+                <Brain className="h-5 w-5 text-primary" />
                 AI Wellness Insights
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <h4 className="font-medium text-sm mb-1">Wellness Recommendations</h4>
+                <h4 className="font-medium text-sm mb-1 text-foreground">Wellness Recommendations</h4>
                 <p className="text-sm text-muted-foreground">
                   {aiOptimization.wellnessInsights}
                 </p>
               </div>
               <div>
-                <h4 className="font-medium text-sm mb-1">Energy Optimization</h4>
+                <h4 className="font-medium text-sm mb-1 text-foreground">Energy Optimization</h4>
                 <p className="text-sm text-muted-foreground">
                   {aiOptimization.energyOptimization}
                 </p>

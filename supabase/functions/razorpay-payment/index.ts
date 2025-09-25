@@ -51,7 +51,7 @@ serve(async (req) => {
 });
 
 async function createRazorpayOrder(
-  { appointmentId, amount, currency = 'INR' }: any,
+  { appointmentId, appointmentIds, amount, currency = 'INR', description }: any,
   supabaseClient: any,
   userId: string
 ) {
@@ -62,26 +62,32 @@ async function createRazorpayOrder(
     throw new Error('Razorpay credentials not configured');
   }
 
-  // Verify appointment belongs to user
-  const { data: appointment, error: appointmentError } = await supabaseClient
+  // Handle both single and multiple appointments
+  const ids = appointmentIds || (appointmentId ? [appointmentId] : []);
+  if (ids.length === 0) {
+    throw new Error('No appointment IDs provided');
+  }
+
+  // Verify appointments belong to user
+  const { data: appointments, error: appointmentError } = await supabaseClient
     .from('appointments')
     .select('*')
-    .eq('id', appointmentId)
-    .eq('patient_id', userId)
-    .single();
+    .in('id', ids)
+    .eq('patient_id', userId);
 
-  if (appointmentError || !appointment) {
-    throw new Error('Appointment not found or unauthorized');
+  if (appointmentError || !appointments || appointments.length !== ids.length) {
+    throw new Error('Appointments not found or unauthorized');
   }
 
   // Create Razorpay order
   const orderData = {
     amount: Math.round(amount * 100), // Convert to paise
     currency: currency,
-    receipt: `appointment_${appointmentId}`,
+    receipt: `appointments_${ids.join('_')}`,
     notes: {
-      appointment_id: appointmentId,
-      patient_id: userId
+      appointment_ids: ids.join(','),
+      patient_id: userId,
+      description: description || `Payment for ${ids.length} therapy sessions`
     }
   };
 
@@ -102,20 +108,22 @@ async function createRazorpayOrder(
 
   const order = await response.json();
 
-  // Store payment record
+  // Store payment records for each appointment
+  const paymentInserts = ids.map((id: string) => ({
+    appointment_id: id,
+    amount: appointments.find((apt: any) => apt.id === id)?.total_amount || 0,
+    currency: currency,
+    razorpay_order_id: order.id,
+    status: 'pending',
+  }));
+
   const { error: paymentError } = await supabaseClient
     .from('payments')
-    .insert({
-      appointment_id: appointmentId,
-      amount: amount,
-      currency: currency,
-      razorpay_order_id: order.id,
-      status: 'pending',
-    });
+    .insert(paymentInserts);
 
   if (paymentError) {
-    console.error('Error storing payment:', paymentError);
-    throw new Error('Failed to store payment record');
+    console.error('Error storing payments:', paymentError);
+    throw new Error('Failed to store payment records');
   }
 
   return new Response(JSON.stringify({ 
@@ -129,7 +137,7 @@ async function createRazorpayOrder(
 }
 
 async function verifyRazorpayPayment(
-  { razorpayOrderId, razorpayPaymentId, razorpaySignature }: any,
+  { razorpayOrderId, razorpayPaymentId, razorpaySignature, appointmentIds }: any,
   supabaseClient: any,
   userId: string
 ) {
@@ -149,8 +157,8 @@ async function verifyRazorpayPayment(
     throw new Error('Invalid payment signature');
   }
 
-  // Update payment record
-  const { data: payment, error: paymentError } = await supabaseClient
+  // Update payment records
+  const { data: payments, error: paymentError } = await supabaseClient
     .from('payments')
     .update({
       razorpay_payment_id: razorpayPaymentId,
@@ -158,29 +166,31 @@ async function verifyRazorpayPayment(
       payment_method: 'razorpay',
     })
     .eq('razorpay_order_id', razorpayOrderId)
-    .select('appointment_id')
-    .single();
+    .select('appointment_id');
 
-  if (paymentError || !payment) {
-    console.error('Error updating payment:', paymentError);
-    throw new Error('Failed to update payment record');
+  if (paymentError || !payments) {
+    console.error('Error updating payments:', paymentError);
+    throw new Error('Failed to update payment records');
   }
 
-  // Update appointment payment status
+  // Update appointment payment status for all appointments
+  const appointmentIdsToUpdate = appointmentIds || payments.map((p: any) => p.appointment_id);
+  
   const { error: appointmentError } = await supabaseClient
     .from('appointments')
     .update({ payment_status: 'completed' })
-    .eq('id', payment.appointment_id)
+    .in('id', appointmentIdsToUpdate)
     .eq('patient_id', userId);
 
   if (appointmentError) {
-    console.error('Error updating appointment:', appointmentError);
+    console.error('Error updating appointments:', appointmentError);
     throw new Error('Failed to update appointment status');
   }
 
   return new Response(JSON.stringify({ 
     success: true,
-    message: 'Payment verified successfully'
+    message: 'Payment verified successfully',
+    updated_appointments: appointmentIdsToUpdate.length
   }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });

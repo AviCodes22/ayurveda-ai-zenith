@@ -40,7 +40,9 @@ import { EnhancedSchedulingInterface } from './EnhancedSchedulingInterface';
 import { ScientificProgressDashboard } from './ScientificProgressDashboard';
 import { FeedbackSystem } from './FeedbackSystem';
 import { EnhancedNotificationCenter } from './EnhancedNotificationCenter';
+import { CurrentPatients } from './CurrentPatients';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Card } from '@/components/ui/card';
 
 interface UserProfile {
   unique_id: string;
@@ -215,7 +217,43 @@ export const CollapsibleDashboard = ({ userType, onLogout, userProfile }: Collap
         return <PatientDashboard />;
       
       case 'schedule':
-        return <EnhancedSchedulingInterface />;
+        if (userType === 'patient') {
+          return <EnhancedSchedulingInterface />;
+        } else {
+          // For doctors and therapists, show their schedule view
+          return (
+            <Card className="p-6">
+              <h2 className="text-2xl font-semibold mb-4">My Schedule</h2>
+              <p className="text-muted-foreground">Your appointments and schedule will be displayed here.</p>
+              {/* You can add a calendar component or appointment list here */}
+            </Card>
+          );
+        }
+      
+      case 'patients':
+        // Handle "My Patients" tab for doctors and therapists
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-semibold">My Patients</h2>
+            <CurrentPatients />
+          </div>
+        );
+      
+      case 'analytics':
+        return (
+          <Card className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Analytics</h2>
+            <p className="text-muted-foreground">Patient analytics and performance metrics will be displayed here.</p>
+          </Card>
+        );
+      
+      case 'treatments':
+        return (
+          <Card className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Treatments</h2>
+            <p className="text-muted-foreground">Available treatments and therapy options will be displayed here.</p>
+          </Card>
+        );
       
       case 'progress':
         return <ScientificProgressDashboard />;

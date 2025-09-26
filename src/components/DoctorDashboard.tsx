@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, Calendar, Stethoscope, TrendingUp, Clock, UserCheck, FileText, Activity } from "lucide-react";
+import { Users, Calendar, Stethoscope, TrendingUp, Clock, UserCheck, FileText, Activity, Eye } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { CurrentPatients } from "./CurrentPatients";
 
@@ -44,7 +45,86 @@ interface DoctorDashboardProps {
   displayName?: string;
 }
 
+interface ConsultationDetailsModalProps {
+  consultation: any;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const ConsultationDetailsModal = ({ consultation, isOpen, onClose }: ConsultationDetailsModalProps) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-card p-6 rounded-lg w-full max-w-md mx-4 border">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Consultation Details</h3>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            ×
+          </Button>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium">{consultation.patient}</h4>
+            <p className="text-sm text-muted-foreground">{consultation.type}</p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm">{consultation.time}</span>
+          </div>
+          
+          <div>
+            <p className="text-sm font-medium mb-1">Notes:</p>
+            <p className="text-sm text-muted-foreground">{consultation.notes}</p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Status:</span>
+            <Badge 
+              variant={
+                consultation.status === "confirmed" ? "secondary" : 
+                consultation.status === "in-progress" ? "default" : "outline"
+              }
+            >
+              {consultation.status}
+            </Badge>
+          </div>
+          
+          <div className="flex gap-2 pt-4">
+            <Button variant="outline" size="sm" className="flex-1">
+              Reschedule
+            </Button>
+            <Button variant="default" size="sm" className="flex-1">
+              Start Session
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const DoctorDashboard = ({ displayName }: DoctorDashboardProps) => {
+  const [selectedConsultation, setSelectedConsultation] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  const handleViewFullSchedule = () => {
+    // This would typically navigate to the schedule tab or open a full schedule view
+    window.location.hash = '#schedule';
+    // Or if using React Router: navigate('/dashboard/schedule');
+  };
+
+  const handleViewDetails = (consultation: any) => {
+    setSelectedConsultation(consultation);
+    setShowDetailsModal(true);
+  };
+
+  const closeModal = () => {
+    setShowDetailsModal(false);
+    setSelectedConsultation(null);
+  };
   return (
     <div className="space-y-8">
       {/* Doctor Welcome Section */}
@@ -169,7 +249,11 @@ export const DoctorDashboard = ({ displayName }: DoctorDashboardProps) => {
       <Card className="p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Today's Consultations</h3>
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleViewFullSchedule}
+          >
             <Calendar className="h-4 w-4 mr-2" />
             View Full Schedule
           </Button>
@@ -238,7 +322,12 @@ export const DoctorDashboard = ({ displayName }: DoctorDashboardProps) => {
                     "Pending"
                   )}
                 </Badge>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleViewDetails(consultation)}
+                >
+                  <Eye className="h-4 w-4 mr-1" />
                   View Details
                 </Button>
               </div>
@@ -249,6 +338,13 @@ export const DoctorDashboard = ({ displayName }: DoctorDashboardProps) => {
 
       {/* Current Patients Section */}
       <CurrentPatients />
+
+      {/* Consultation Details Modal */}
+      <ConsultationDetailsModal 
+        consultation={selectedConsultation}
+        isOpen={showDetailsModal}
+        onClose={closeModal}
+      />
     </div>
   );
 };

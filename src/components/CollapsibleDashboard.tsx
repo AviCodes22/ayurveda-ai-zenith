@@ -41,6 +41,8 @@ import { ScientificProgressDashboard } from './ScientificProgressDashboard';
 import { FeedbackSystem } from './FeedbackSystem';
 import { EnhancedNotificationCenter } from './EnhancedNotificationCenter';
 import { CurrentPatients } from './CurrentPatients';
+import { MySchedule } from './MySchedule';
+import { MyAnalytics } from './MyAnalytics';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card } from '@/components/ui/card';
 
@@ -220,14 +222,7 @@ export const CollapsibleDashboard = ({ userType, onLogout, userProfile }: Collap
         if (userType === 'patient') {
           return <EnhancedSchedulingInterface />;
         } else {
-          // For doctors and therapists, show their schedule view
-          return (
-            <Card className="p-6">
-              <h2 className="text-2xl font-semibold mb-4">My Schedule</h2>
-              <p className="text-muted-foreground">Your appointments and schedule will be displayed here.</p>
-              {/* You can add a calendar component or appointment list here */}
-            </Card>
-          );
+          return <MySchedule />;
         }
       
       case 'patients':
@@ -240,12 +235,7 @@ export const CollapsibleDashboard = ({ userType, onLogout, userProfile }: Collap
         );
       
       case 'analytics':
-        return (
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Analytics</h2>
-            <p className="text-muted-foreground">Patient analytics and performance metrics will be displayed here.</p>
-          </Card>
-        );
+        return <MyAnalytics />;
       
       case 'treatments':
         return (

@@ -103,7 +103,7 @@ export const ImprovedLoginSystem = () => {
         .from('profiles')
         .select('unique_id, full_name, role')
         .eq('user_id', authData.user.id)
-        .single();
+        .maybeSingle();
 
       if (profileError || !profileData) {
         console.error('Profile verification error:', profileError);

@@ -213,10 +213,10 @@ export const CollapsibleDashboard = ({ userType, onLogout, userProfile }: Collap
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        if (userType === 'patient') return <PatientDashboard />;
+        if (userType === 'patient') return <PatientDashboard displayName={userProfile?.full_name} />;
         if (userType === 'doctor') return <DoctorDashboard displayName={userProfile?.full_name} />;
         if (userType === 'therapist') return <TherapistDashboard displayName={userProfile?.full_name} />;
-        return <PatientDashboard />;
+        return <PatientDashboard displayName={userProfile?.full_name} />;
       
       case 'schedule':
         if (userType === 'patient') {

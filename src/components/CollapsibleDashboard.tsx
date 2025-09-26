@@ -33,7 +33,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { PatientDashboard } from './PatientDashboard';
-import { PractitionerDashboard } from './PractitionerDashboard';
+import { DoctorDashboard } from './DoctorDashboard';
+import { TherapistDashboard } from './TherapistDashboard';
 import { AdminDashboard } from './AdminDashboard';
 import { EnhancedSchedulingInterface } from './EnhancedSchedulingInterface';
 import { ScientificProgressDashboard } from './ScientificProgressDashboard';
@@ -209,8 +210,8 @@ export const CollapsibleDashboard = ({ userType, onLogout, userProfile }: Collap
     switch (activeTab) {
       case 'dashboard':
         if (userType === 'patient') return <PatientDashboard />;
-        if (userType === 'doctor') return <PractitionerDashboard />;
-        if (userType === 'therapist') return <PractitionerDashboard />;
+        if (userType === 'doctor') return <DoctorDashboard displayName={userProfile?.full_name} />;
+        if (userType === 'therapist') return <TherapistDashboard displayName={userProfile?.full_name} />;
         return <PatientDashboard />;
       
       case 'schedule':

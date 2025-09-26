@@ -16,7 +16,8 @@ import {
   TrendingUp
 } from "lucide-react";
 import { PatientDashboard } from "@/components/PatientDashboard";
-import { PractitionerDashboard } from "@/components/PractitionerDashboard";
+import { DoctorDashboard } from "@/components/DoctorDashboard";
+import { TherapistDashboard } from "@/components/TherapistDashboard";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { SchedulingInterface } from "@/components/SchedulingInterface";
 import { NotificationCenter } from "@/components/NotificationCenter";
@@ -183,7 +184,9 @@ export const Dashboard = ({ userType, onLogout, userProfile }: DashboardProps) =
               {activeTab === "overview" && (
                 <>
                   {userType === "patient" && <PatientDashboard displayName={userProfile?.full_name} />}
-                  {(userType === "practitioner" || userType === "doctor") && <PractitionerDashboard displayName={userProfile?.full_name} />}
+                  {userType === "doctor" && <DoctorDashboard displayName={userProfile?.full_name} />}
+                  {userType === "therapist" && <TherapistDashboard displayName={userProfile?.full_name} />}
+                  {userType === "practitioner" && <DoctorDashboard displayName={userProfile?.full_name} />}
                   {(userType === "admin" || userType === "administrator") && <AdminDashboard />}
                 </>
               )}

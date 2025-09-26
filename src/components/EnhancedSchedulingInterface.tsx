@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, Sparkles, Brain, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Calendar, Clock, Sparkles, Brain, CheckCircle, AlertCircle, Loader2, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -42,6 +43,13 @@ interface AIOptimization {
   optimizedSchedule: OptimizedSchedule[];
   wellnessInsights: string;
   energyOptimization: string;
+}
+
+interface Practitioner {
+  id: string;
+  full_name: string;
+  unique_id: string;
+  role: string;
 }
 
 const ItemType = 'THERAPY';
@@ -174,10 +182,12 @@ const DropZoneSlot = ({
 export const EnhancedSchedulingInterface = () => {
   const [therapies, setTherapies] = useState<Therapy[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
   const [selectedTherapies, setSelectedTherapies] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
+  const [selectedDoctor, setSelectedDoctor] = useState<string>('');
   const [schedule, setSchedule] = useState<Map<string, Therapy>>(new Map());
   const [aiOptimization, setAiOptimization] = useState<AIOptimization | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -192,6 +202,7 @@ export const EnhancedSchedulingInterface = () => {
     if (user) {
       fetchTherapies();
       fetchTimeSlots();
+      fetchPractitioners();
     }
   }, [user]);
 
@@ -236,6 +247,34 @@ export const EnhancedSchedulingInterface = () => {
     }
   };
 
+  const fetchPractitioners = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, unique_id, role')
+        .in('role', ['doctor', 'therapist'])
+        .order('full_name');
+      
+      if (error) throw error;
+      
+      const formattedPractitioners = data?.map(p => ({
+        id: p.user_id,
+        full_name: p.full_name,
+        unique_id: p.unique_id,
+        role: p.role
+      })) || [];
+      
+      setPractitioners(formattedPractitioners);
+    } catch (error) {
+      console.error('Error fetching practitioners:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load practitioners",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleTherapySelect = (therapyId: string) => {
     setSelectedTherapies(prev => 
       prev.includes(therapyId) 
@@ -256,6 +295,15 @@ export const EnhancedSchedulingInterface = () => {
       toast({
         title: "Please select therapies",
         description: "Choose at least one therapy to optimize your schedule",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedDoctor) {
+      toast({
+        title: "Please select a practitioner",
+        description: "Choose a doctor or therapist for your appointment",
         variant: "destructive",
       });
       return;
@@ -315,10 +363,20 @@ export const EnhancedSchedulingInterface = () => {
       return;
     }
 
+    if (!selectedDoctor) {
+      toast({
+        title: "Please select a practitioner",
+        description: "Choose a doctor or therapist for your appointment",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // Create pending appointments first
       const appointments = Array.from(schedule.entries()).map(([slotId, therapy]) => ({
         patient_id: user?.id,
+        practitioner_id: selectedDoctor,
         therapy_id: therapy.id,
         time_slot_id: slotId,
         appointment_date: selectedDate,
@@ -365,6 +423,7 @@ export const EnhancedSchedulingInterface = () => {
       // Reset form
       setSchedule(new Map());
       setSelectedTherapies([]);
+      setSelectedDoctor('');
       setAiOptimization(null);
 
     } catch (error) {
@@ -401,23 +460,50 @@ export const EnhancedSchedulingInterface = () => {
           </CardHeader>
         <CardContent className="space-y-6">
           {/* Appointment Selection */}
-          <div className="space-y-2">
-            <Label className="text-base font-semibold">Select Date</Label>
-            <div className="relative z-20">
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-3 border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label className="text-base font-semibold">Select Date</Label>
+              <div className="relative z-20">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-3 border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-base font-semibold">Select Practitioner</Label>
+              <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose doctor or therapist" />
+                </SelectTrigger>
+                <SelectContent>
+                  {practitioners.map((practitioner) => (
+                    <SelectItem key={practitioner.id} value={practitioner.id}>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <span>{practitioner.full_name}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {practitioner.unique_id}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs capitalize">
+                          {practitioner.role}
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           
           <div className="flex items-center gap-4">
             <Button
               onClick={handleAIOptimization}
-              disabled={isOptimizing || selectedTherapies.length === 0}
+              disabled={isOptimizing || selectedTherapies.length === 0 || !selectedDoctor}
               className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary"
             >
               {isOptimizing ? (
@@ -434,7 +520,7 @@ export const EnhancedSchedulingInterface = () => {
             </Button>
             <Button
               onClick={handleBookAppointments}
-              disabled={schedule.size === 0}
+              disabled={schedule.size === 0 || !selectedDoctor}
               variant="default"
             >
               <CheckCircle className="h-4 w-4 mr-2" />

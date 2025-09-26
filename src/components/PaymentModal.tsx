@@ -55,6 +55,12 @@ export const PaymentModal = ({ isOpen, onClose, appointment, onSuccess }: Paymen
         throw new Error('Failed to load Razorpay. Please check your internet connection.');
       }
 
+      console.log('Creating payment order with data:', {
+        appointmentId: appointment.id,
+        amount: appointment.amount,
+        currency: 'INR'
+      });
+
       // Create order
       const { data, error } = await supabase.functions.invoke('razorpay-payment', {
         body: {
@@ -65,7 +71,10 @@ export const PaymentModal = ({ isOpen, onClose, appointment, onSuccess }: Paymen
         }
       });
 
+      console.log('Payment order response:', { data, error });
+
       if (error || !data) {
+        console.error('Order creation failed:', error);
         throw new Error(error?.message || 'Failed to create payment order');
       }
 
@@ -78,16 +87,24 @@ export const PaymentModal = ({ isOpen, onClose, appointment, onSuccess }: Paymen
         description: `Payment for ${appointment.therapy}`,
         order_id: data.orderId,
         handler: async function (response: any) {
+          console.log('Razorpay payment response:', response);
           try {
             // Verify payment
+            const verifyPayload = {
+              action: 'verify_payment',
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              appointmentIds: [appointment.id]
+            };
+            
+            console.log('Verifying payment with payload:', verifyPayload);
+            
             const { error: verifyError } = await supabase.functions.invoke('razorpay-payment', {
-              body: {
-                action: 'verify_payment',
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature
-              }
+              body: verifyPayload
             });
+
+            console.log('Payment verification response:', { verifyError });
 
             if (verifyError) {
               throw new Error(verifyError.message);

@@ -147,6 +147,7 @@ export const FeedbackSystem = () => {
           patient_id: user?.id,
           appointment_id: selectedAppointment,
           therapy_id: appointment?.therapies.id,
+          practitioner_id: appointmentDetails.practitioner_id,
           rating,
           comments,
           pain_level_before: painBefore[0],

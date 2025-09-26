@@ -127,6 +127,7 @@ export type Database = {
           pain_level_after: number | null
           pain_level_before: number | null
           patient_id: string
+          practitioner_id: string | null
           rating: number
           sleep_quality: number | null
           therapy_id: string
@@ -142,6 +143,7 @@ export type Database = {
           pain_level_after?: number | null
           pain_level_before?: number | null
           patient_id: string
+          practitioner_id?: string | null
           rating: number
           sleep_quality?: number | null
           therapy_id: string
@@ -157,6 +159,7 @@ export type Database = {
           pain_level_after?: number | null
           pain_level_before?: number | null
           patient_id?: string
+          practitioner_id?: string | null
           rating?: number
           sleep_quality?: number | null
           therapy_id?: string

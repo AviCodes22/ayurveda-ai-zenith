@@ -124,7 +124,9 @@ Respond with a JSON object containing:
 }`;
 
     // Call Gemini API
-    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+    console.log('Calling Gemini API with key:', geminiApiKey ? 'Key present' : 'Key missing');
+    
+    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -144,12 +146,16 @@ Respond with a JSON object containing:
       })
     });
 
+    const responseText = await geminiResponse.text();
+    console.log('Gemini API response status:', geminiResponse.status);
+    console.log('Gemini API response:', responseText);
+
     if (!geminiResponse.ok) {
-      console.error('Gemini API error:', await geminiResponse.text());
-      throw new Error('Failed to get AI optimization');
+      console.error('Gemini API error:', responseText);
+      throw new Error(`Gemini API failed with status ${geminiResponse.status}: ${responseText}`);
     }
 
-    const geminiData = await geminiResponse.json();
+    const geminiData = JSON.parse(responseText);
     const aiResponse = geminiData.candidates[0].content.parts[0].text;
     
     // Parse AI response

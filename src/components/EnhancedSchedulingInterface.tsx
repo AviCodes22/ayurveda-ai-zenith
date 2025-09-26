@@ -372,7 +372,8 @@ export const EnhancedSchedulingInterface = () => {
       return;
     }
 
-    try {
+  
+  try {
       // Create pending appointments first
       const appointments = Array.from(schedule.entries()).map(([slotId, therapy]) => ({
         patient_id: user?.id,
@@ -385,12 +386,17 @@ export const EnhancedSchedulingInterface = () => {
         payment_status: 'pending'
       }));
 
+      console.log('Creating appointments payload:', appointments);
+
       const { data: createdAppointments, error } = await supabase
         .from('appointments')
         .insert(appointments)
         .select('*');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase insert error:', error);
+        throw new Error(error.message || 'Unknown error while creating appointments');
+      }
 
       // Calculate total amount
       const totalAmount = Array.from(schedule.values()).reduce((sum, therapy) => sum + therapy.price, 0);
@@ -427,11 +433,12 @@ export const EnhancedSchedulingInterface = () => {
       setAiOptimization(null);
 
     } catch (error) {
-      console.error('Error creating appointments:', error);
+      console.error('Error creating appointments (catch):', error);
+      const message = error instanceof Error ? error.message : 'Failed to create appointments. Please try again.';
       toast({
-        title: "Booking failed",
-        description: "Failed to create appointments. Please try again.",
-        variant: "destructive",
+        title: 'Booking failed',
+        description: message,
+        variant: 'destructive',
       });
     }
   };

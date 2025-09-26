@@ -174,8 +174,8 @@ export const SchedulingInterface = ({ userType }: SchedulingInterfaceProps) => {
         .single();
 
       if (error) {
-        console.error('Error creating appointment:', error);
-        toast.error('Failed to create appointment');
+        console.error('Supabase insert error (single appointment):', error);
+        toast.error(`Failed to create appointment: ${error.message || 'Unknown error'}`);
         return;
       }
 

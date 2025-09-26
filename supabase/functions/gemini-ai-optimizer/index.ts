@@ -133,6 +133,7 @@ Respond with a JSON object containing:
       },
       body: JSON.stringify({
         contents: [{
+          role: 'user',
           parts: [{
             text: prompt
           }]
@@ -150,26 +151,30 @@ Respond with a JSON object containing:
     console.log('Gemini API response status:', geminiResponse.status);
     console.log('Gemini API response:', responseText);
 
+    let aiResponseText: string | null = null;
     if (!geminiResponse.ok) {
-      console.error('Gemini API error:', responseText);
-      throw new Error(`Gemini API failed with status ${geminiResponse.status}: ${responseText}`);
+      console.error('Gemini API error, proceeding with heuristic fallback:', responseText);
+    } else {
+      try {
+        const geminiData = JSON.parse(responseText);
+        aiResponseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
+      } catch (e) {
+        console.error('Failed parsing Gemini response JSON:', e);
+      }
     }
-
-    const geminiData = JSON.parse(responseText);
-    const aiResponse = geminiData.candidates[0].content.parts[0].text;
     
-    // Parse AI response
+    // Parse AI response or fallback
     let optimizationResult;
     try {
-      // Extract JSON from the response
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+      const sourceText = aiResponseText ?? '';
+      const jsonMatch = sourceText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         optimizationResult = JSON.parse(jsonMatch[0]);
       } else {
         throw new Error('No JSON found in AI response');
       }
     } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError);
+      console.error('Failed to parse AI response, using heuristic fallback:', parseError);
       // Fallback: create basic optimization
       optimizationResult = {
         optimizedSchedule: selectedTherapies.map((therapyId: string, index: number) => ({

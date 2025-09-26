@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, Eye, Calendar, Clock } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Users, Eye, Calendar, Clock, X, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
@@ -20,6 +21,9 @@ interface CurrentPatient {
 export const CurrentPatients = () => {
   const [patients, setPatients] = useState<CurrentPatient[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
+  const [patientHistory, setPatientHistory] = useState<any[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -110,6 +114,36 @@ export const CurrentPatients = () => {
       console.error('Error fetching current patients:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleViewPatient = async (patientId: string) => {
+    setSelectedPatient(patientId);
+    
+    try {
+      // Fetch patient's appointment history
+      const { data: appointmentsData, error: appointmentsError } = await supabase
+        .from('appointments')
+        .select(`
+          id,
+          appointment_date,
+          status,
+          total_amount,
+          payment_status,
+          notes,
+          therapies(name),
+          time_slots(start_time, end_time)
+        `)
+        .eq('patient_id', patientId)
+        .eq('practitioner_id', user?.id)
+        .order('appointment_date', { ascending: false });
+
+      if (appointmentsError) throw appointmentsError;
+      
+      setPatientHistory(appointmentsData || []);
+      setShowHistory(true);
+    } catch (error) {
+      console.error('Error fetching patient history:', error);
     }
   };
 
@@ -220,7 +254,12 @@ export const CurrentPatients = () => {
                       {getStatusIcon(patient.status)}
                       {patient.status.charAt(0).toUpperCase() + patient.status.slice(1)}
                     </Badge>
-                    <Button variant="outline" size="sm" className="hover-scale">
+                     <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="hover-scale"
+                      onClick={() => handleViewPatient(patient.patient_id)}
+                    >
                       <Eye className="h-4 w-4 mr-1" />
                       View
                     </Button>
@@ -231,6 +270,90 @@ export const CurrentPatients = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Patient History Dialog */}
+      <Dialog open={showHistory} onOpenChange={setShowHistory}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Patient Appointment History
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHistory(false)}
+                className="ml-auto"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {patientHistory.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No appointment history found for this patient.</p>
+              </div>
+            ) : (
+              patientHistory.map((appointment, index) => (
+                <motion.div
+                  key={appointment.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="border rounded-lg p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">
+                          {new Date(appointment.appointment_date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                          {appointment.time_slots?.start_time} - {appointment.time_slots?.end_time}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={getStatusColor(appointment.status)}>
+                        {appointment.status}
+                      </Badge>
+                      <Badge variant="outline">
+                        ₹{appointment.total_amount}
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-foreground">
+                      {appointment.therapies?.name}
+                    </h4>
+                    {appointment.notes && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        <strong>Notes:</strong> {appointment.notes}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <Badge 
+                      variant={appointment.payment_status === 'completed' ? 'default' : 'destructive'}
+                      className="text-xs"
+                    >
+                      Payment: {appointment.payment_status}
+                    </Badge>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 };

@@ -69,6 +69,7 @@ export const FeedbackSystem = () => {
           appointment_date,
           status,
           therapy_id,
+          practitioner_id,
           therapies(name, id),
           time_slots(start_time, end_time)
         `)
@@ -130,6 +131,15 @@ export const FeedbackSystem = () => {
     setIsSubmitting(true);
     try {
       const appointment = appointments.find(apt => apt.id === selectedAppointment);
+      
+      // Get appointment details with practitioner info
+      const { data: appointmentDetails, error: appointmentError } = await supabase
+        .from('appointments')
+        .select('practitioner_id')
+        .eq('id', selectedAppointment)
+        .single();
+
+      if (appointmentError) throw appointmentError;
       
       const { error } = await supabase
         .from('feedback')

@@ -276,8 +276,8 @@ export const CollapsibleDashboard = ({ userType, onLogout, userProfile }: Collap
         <div className="fixed top-0 left-0 right-0 h-12 bg-card/80 backdrop-blur-sm border-b border-border/50 flex items-center px-4 z-50">
           <SidebarTrigger className="hover:bg-accent/50" />
           <div className="ml-4 flex items-center gap-2">
-            <div className="h-6 w-6 rounded bg-primary/20" />
-            <span className="font-semibold text-foreground">AyurTech Pro</span>
+            <Stethoscope className="h-7 w-7 text-primary" />
+            <span className="font-semibold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">AyurTech Pro</span>
           </div>
         </div>
 

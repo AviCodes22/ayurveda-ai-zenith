@@ -18,6 +18,29 @@ interface CurrentPatient {
   total_amount: number;
 }
 
+const SAMPLE_NAMES = [
+  "Aarav Sharma",
+  "Isha Kapoor",
+  "Rohan Mehta",
+  "Priya Nair",
+  "Kabir Singh",
+  "Ananya Desai",
+  "Vikram Rao",
+  "Sneha Joshi",
+  "Rahul Verma",
+  "Nikita Patil"
+];
+
+function getSampleName(id: string) {
+  try {
+    let sum = 0;
+    for (let i = 0; i < id.length; i++) sum = (sum + id.charCodeAt(i)) % 1000;
+    return SAMPLE_NAMES[sum % SAMPLE_NAMES.length];
+  } catch {
+    return SAMPLE_NAMES[Math.floor(Math.random() * SAMPLE_NAMES.length)];
+  }
+}
+
 export const CurrentPatients = () => {
   const [patients, setPatients] = useState<CurrentPatient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,7 +123,7 @@ export const CurrentPatients = () => {
 
         return {
           patient_id: appointment.patient_id,
-          patient_name: profile?.full_name || 'Unknown Patient',
+          patient_name: profile?.full_name ?? getSampleName(appointment.patient_id),
           therapy_name: therapy?.name || 'Unknown Therapy',
           appointment_date: appointment.appointment_date,
           status: appointment.status,

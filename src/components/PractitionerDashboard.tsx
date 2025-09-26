@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, Calendar, AlertTriangle, TrendingUp, Clock, UserCheck } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { PreviousPatients } from "./PreviousPatients";
 const patientData = [{
   therapy: "Panchakarma",
   count: 15
@@ -252,5 +253,8 @@ export const PractitionerDashboard = ({
             </div>)}
         </div>
       </Card>
+
+      {/* Previous Patients Section */}
+      <PreviousPatients />
     </div>;
 };

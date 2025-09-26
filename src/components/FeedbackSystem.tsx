@@ -372,13 +372,8 @@ export const FeedbackSystem = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {feedbacks.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              No feedback submitted yet. Complete a therapy session to share your experience!
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {feedbacks.map((feedback) => (
+          <div className="space-y-4">
+            {feedbacks.map((feedback) => (
                 <motion.div
                   key={feedback.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -426,7 +421,6 @@ export const FeedbackSystem = () => {
                 </motion.div>
               ))}
             </div>
-          )}
         </CardContent>
       </Card>
     </div>

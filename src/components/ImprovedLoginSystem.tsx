@@ -272,10 +272,6 @@ export const ImprovedLoginSystem = () => {
                   Register here
                 </Link>
               </p>
-              <div className="text-xs text-muted-foreground">
-                <p>Demo Credentials:</p>
-                <p>ID: PAT0001, Password: patient123</p>
-              </div>
             </div>
           </CardContent>
         </Card>
